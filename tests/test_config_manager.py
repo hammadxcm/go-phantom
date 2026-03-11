@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from phantom.config.manager import ConfigManager
 from phantom.config.schema import PhantomConfig
 

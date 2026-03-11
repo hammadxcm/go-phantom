@@ -4,9 +4,7 @@ from __future__ import annotations
 
 import threading
 import time
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from phantom.config.schema import (
     KeyboardConfig,
@@ -116,7 +114,7 @@ class TestSchedulerLifecycle:
     @patch("phantom.core.scheduler.Randomizer.should_idle", return_value=True)
     @patch("phantom.core.scheduler.Randomizer.idle_duration", return_value=0.01)
     def test_idle_period(self, _dur, _idle):
-        sched, sims = self._make_scheduler()
+        sched, _sims = self._make_scheduler()
         sched.start()
         time.sleep(0.1)
         sched.stop()

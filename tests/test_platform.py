@@ -6,7 +6,13 @@ from unittest.mock import patch
 
 import pytest
 
-from phantom.core.platform import OS, check_platform_requirements, current_os, is_frozen, is_wayland
+from phantom.core.platform import (
+    OS,
+    check_platform_requirements,
+    current_os,
+    is_frozen,
+    is_wayland,
+)
 
 
 class TestCurrentOS:
@@ -87,6 +93,5 @@ class TestIsFrozen:
     def test_frozen(self, mock_sys):
         mock_sys.frozen = True
         # Re-import won't work, test the function directly
-        from phantom.core.platform import is_frozen as _is_frozen
         # Since we mock sys at module level, we need to test getattr
         assert getattr(mock_sys, "frozen", False) is True

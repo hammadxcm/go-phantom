@@ -25,7 +25,7 @@ class TestCreateStatusIcon:
         assert img.mode == "RGBA"
         # Center pixel should be green
         cx, cy = 32, 32
-        r, g, b, a = img.getpixel((cx, cy))
+        r, g, _b, a = img.getpixel((cx, cy))
         assert g > r  # Green component dominant
         assert a == 255
 
@@ -39,5 +39,5 @@ class TestCreateStatusIcon:
 
     def test_corner_is_transparent(self):
         img = create_status_icon(True)
-        r, g, b, a = img.getpixel((0, 0))
+        _r, _g, _b, a = img.getpixel((0, 0))
         assert a == 0

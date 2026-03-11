@@ -50,10 +50,10 @@ class TestMaskLinux:
         sys.modules["setproctitle"] = None  # type: ignore
         try:
             # Import will raise ImportError when module is None
-            result = _mask_linux("test")
+            _mask_linux("test")
             # setproctitle might actually be installed, handle both cases
         except Exception:
-            result = False
+            pass
         finally:
             if saved is not None:
                 sys.modules["setproctitle"] = saved
@@ -84,7 +84,7 @@ class TestMaskMacOS:
         saved = sys.modules.get("setproctitle")
         sys.modules["setproctitle"] = None  # type: ignore
         try:
-            result = _mask_macos("test")
+            _mask_macos("test")
             # May succeed via libc fallback or fail gracefully
         finally:
             if saved is not None:
@@ -98,7 +98,7 @@ class TestMaskMacOS:
         saved = sys.modules.get("setproctitle")
         sys.modules["setproctitle"] = None  # type: ignore
         try:
-            result = _mask_macos("test")
+            _mask_macos("test")
             # When setproctitle import fails (None module), the behavior
             # depends on the import mechanism
         finally:

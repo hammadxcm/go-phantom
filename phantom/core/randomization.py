@@ -131,5 +131,5 @@ class Randomizer:
     @staticmethod
     def weighted_choice(options: list[tuple[str, float]]) -> str:
         """Weighted random selection. Returns the chosen option name."""
-        names, weights = zip(*options)
+        names, weights = zip(*options, strict=False)
         return random.choices(list(names), weights=list(weights), k=1)[0]

@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-import time
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -17,10 +16,9 @@ from phantom.config.schema import (
 from phantom.simulators.app_switcher import AppSwitcherSimulator
 from phantom.simulators.base import BaseSimulator
 from phantom.simulators.browser_tabs import BrowserTabsSimulator
-from phantom.simulators.keyboard import KeyboardSimulator, SAFE_KEYS
+from phantom.simulators.keyboard import SAFE_KEYS, KeyboardSimulator
 from phantom.simulators.mouse import MouseSimulator
 from phantom.simulators.scroll import ScrollSimulator
-
 
 # ---- BaseSimulator ----
 
@@ -108,7 +106,8 @@ class TestMouseSimulator:
         # Very small max_distance but large min_distance
         config = MouseConfig(min_distance=100, max_distance=5, bezier_steps=3)
 
-        with patch("phantom.simulators.mouse.random.randint", side_effect=[1, 1, -3, 3, 2, -1, 0, 3]):
+        side = [1, 1, -3, 3, 2, -1, 0, 3]
+        with patch("phantom.simulators.mouse.random.randint", side_effect=side):
             sim.execute(config)
 
         assert mock_pyautogui.moveTo.called
@@ -125,9 +124,11 @@ class TestKeyboardSimulator:
         sim._controller = mock_ctrl
         config = KeyboardConfig(max_presses=2)
 
-        with patch("phantom.simulators.keyboard.random.randint", return_value=2):
-            with patch("phantom.simulators.keyboard.random.random", return_value=0.5):
-                sim.execute(config)
+        with (
+            patch("phantom.simulators.keyboard.random.randint", return_value=2),
+            patch("phantom.simulators.keyboard.random.random", return_value=0.5),
+        ):
+            sim.execute(config)
 
         assert mock_ctrl.press.called
         assert mock_ctrl.release.called
@@ -140,10 +141,12 @@ class TestKeyboardSimulator:
         sim._controller = mock_ctrl
         config = KeyboardConfig(max_presses=1)
 
-        with patch("phantom.simulators.keyboard.random.randint", return_value=1):
+        with (
+            patch("phantom.simulators.keyboard.random.randint", return_value=1),
             # random() < 0.15 triggers capslock
-            with patch("phantom.simulators.keyboard.random.random", return_value=0.05):
-                sim.execute(config)
+            patch("phantom.simulators.keyboard.random.random", return_value=0.05),
+        ):
+            sim.execute(config)
 
         from pynput.keyboard import Key
         press_calls = [c for c in mock_ctrl.press.call_args_list if c[0][0] == Key.caps_lock]
@@ -157,9 +160,11 @@ class TestKeyboardSimulator:
         sim._controller = mock_ctrl
         config = KeyboardConfig(max_presses=3)
 
-        with patch("phantom.simulators.keyboard.random.randint", return_value=3):
-            with patch("phantom.simulators.keyboard.random.random", return_value=0.5):
-                sim.execute(config)
+        with (
+            patch("phantom.simulators.keyboard.random.randint", return_value=3),
+            patch("phantom.simulators.keyboard.random.random", return_value=0.5),
+        ):
+            sim.execute(config)
 
         from pynput.keyboard import Key
         allowed = set(SAFE_KEYS) | {Key.caps_lock}
@@ -176,10 +181,12 @@ class TestScrollSimulator:
         sim = ScrollSimulator()
         config = ScrollConfig(min_clicks=2, max_clicks=3)
 
-        with patch("phantom.simulators.scroll.random.randint", side_effect=[2, 1, 2]):
-            with patch("phantom.simulators.scroll.random.choice", return_value=1):
-                with patch("phantom.simulators.scroll.random.random", return_value=0.5):
-                    sim.execute(config)
+        with (
+            patch("phantom.simulators.scroll.random.randint", side_effect=[2, 1, 2]),
+            patch("phantom.simulators.scroll.random.choice", return_value=1),
+            patch("phantom.simulators.scroll.random.random", return_value=0.5),
+        ):
+            sim.execute(config)
 
         assert mock_pyautogui.scroll.called
 
@@ -189,11 +196,13 @@ class TestScrollSimulator:
         sim = ScrollSimulator()
         config = ScrollConfig(min_clicks=1, max_clicks=1)
 
-        with patch("phantom.simulators.scroll.random.randint", side_effect=[1, 2]):
-            with patch("phantom.simulators.scroll.random.choice", return_value=-1):
-                # random() < 0.1 triggers hscroll
-                with patch("phantom.simulators.scroll.random.random", return_value=0.05):
-                    sim.execute(config)
+        with (
+            patch("phantom.simulators.scroll.random.randint", side_effect=[1, 2]),
+            patch("phantom.simulators.scroll.random.choice", return_value=-1),
+            # random() < 0.1 triggers hscroll
+            patch("phantom.simulators.scroll.random.random", return_value=0.05),
+        ):
+            sim.execute(config)
 
         assert mock_pyautogui.hscroll.called
 
@@ -224,6 +233,7 @@ class TestAppSwitcherSimulator:
     @patch("phantom.simulators.app_switcher.current_os")
     def test_macos_uses_cmd(self, mock_os, MockController, mock_sleep):
         from pynput.keyboard import Key
+
         from phantom.core.platform import OS
         mock_os.return_value = OS.MACOS
 
@@ -235,6 +245,7 @@ class TestAppSwitcherSimulator:
     @patch("phantom.simulators.app_switcher.current_os")
     def test_windows_uses_alt(self, mock_os, MockController, mock_sleep):
         from pynput.keyboard import Key
+
         from phantom.core.platform import OS
         mock_os.return_value = OS.WINDOWS
 

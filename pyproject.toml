@@ -48,7 +48,7 @@ phantom = "phantom.__main__:main"
 
 [tool.ruff]
 line-length = 99
-target-version = "py38"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]

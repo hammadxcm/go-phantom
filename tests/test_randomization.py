@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import pytest
-
 from phantom.core.randomization import Randomizer
 
 
@@ -31,9 +29,9 @@ class TestBezierControlPoints:
         assert len(cp2) == 2
 
     def test_control_points_differ(self):
-        cp1, cp2 = Randomizer.bezier_control_points((0, 0), (200, 200))
+        _cp1, _cp2 = Randomizer.bezier_control_points((0, 0), (200, 200))
         # Very unlikely to be identical
-        assert cp1 != cp2 or True  # Non-deterministic, just ensure no crash
+        assert True  # Non-deterministic, just ensure no crash
 
     def test_zero_distance(self):
         cp1, cp2 = Randomizer.bezier_control_points((50, 50), (50, 50))

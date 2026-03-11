@@ -16,7 +16,7 @@ class TestHotkeyManager:
         on_quit = MagicMock()
         on_hide = MagicMock()
 
-        mgr = HotkeyManager(config, on_toggle, on_quit, on_hide)
+        HotkeyManager(config, on_toggle, on_quit, on_hide)
 
         MockGlobalHotKeys.assert_called_once()
         call_args = MockGlobalHotKeys.call_args[0][0]
@@ -47,7 +47,7 @@ class TestHotkeyManager:
             quit="<ctrl>+<shift>+q",
             hide_tray="<ctrl>+<shift>+h",
         )
-        mgr = HotkeyManager(config, MagicMock(), MagicMock(), MagicMock())
+        HotkeyManager(config, MagicMock(), MagicMock(), MagicMock())
         call_args = MockGlobalHotKeys.call_args[0][0]
         assert "<ctrl>+<shift>+t" in call_args
         assert "<ctrl>+<shift>+q" in call_args
@@ -57,7 +57,7 @@ class TestHotkeyManager:
     def test_daemon_flag(self, MockGlobalHotKeys):
         mock_listener = MockGlobalHotKeys.return_value
         config = HotkeyConfig()
-        mgr = HotkeyManager(config, MagicMock(), MagicMock(), MagicMock())
+        HotkeyManager(config, MagicMock(), MagicMock(), MagicMock())
         assert mock_listener.daemon is True
 
     @patch("phantom.hotkeys.manager.GlobalHotKeys")

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from phantom.config.schema import PhantomConfig, StealthConfig
 
@@ -16,7 +16,7 @@ class TestPhantomApp:
         MockCM.return_value.config = PhantomConfig()
         from phantom.app import PhantomApp
 
-        app = PhantomApp()
+        PhantomApp()
         MockCM.assert_called_once()
         MockSched.assert_called_once()
         MockTray.assert_called_once()
@@ -30,7 +30,7 @@ class TestPhantomApp:
         MockCM.return_value.config = PhantomConfig()
         from phantom.app import PhantomApp
 
-        app = PhantomApp(config_path="/tmp/test.json")
+        PhantomApp(config_path="/tmp/test.json")
         MockCM.assert_called_once_with("/tmp/test.json")
 
     @patch("phantom.app.mask_process_name")
@@ -40,7 +40,9 @@ class TestPhantomApp:
     @patch("phantom.app.TrayIcon")
     @patch("phantom.app.Scheduler")
     @patch("phantom.app.ConfigManager")
-    def test_run(self, MockCM, MockSched, MockTray, MockHotkey, mock_pyautogui, mock_check, mock_mask):
+    def test_run(
+        self, MockCM, MockSched, MockTray, MockHotkey, mock_pyautogui, mock_check, mock_mask,
+    ):
         MockCM.return_value.config = PhantomConfig()
         from phantom.app import PhantomApp
 
@@ -61,7 +63,9 @@ class TestPhantomApp:
     @patch("phantom.app.TrayIcon")
     @patch("phantom.app.Scheduler")
     @patch("phantom.app.ConfigManager")
-    def test_run_no_rename(self, MockCM, MockSched, MockTray, MockHotkey, mock_pyautogui, mock_check, mock_mask):
+    def test_run_no_rename(
+        self, MockCM, MockSched, MockTray, MockHotkey, mock_pyautogui, mock_check, mock_mask,
+    ):
         config = PhantomConfig(stealth=StealthConfig(rename_process=False))
         MockCM.return_value.config = config
         from phantom.app import PhantomApp
