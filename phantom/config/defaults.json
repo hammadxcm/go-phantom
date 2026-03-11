@@ -1,0 +1,46 @@
+{
+  "timing": {
+    "interval_mean": 8.0,
+    "interval_stddev": 4.0,
+    "interval_min": 0.5,
+    "idle_chance": 0.10,
+    "idle_min": 15.0,
+    "idle_max": 120.0
+  },
+  "mouse": {
+    "enabled": true,
+    "weight": 40.0,
+    "min_distance": 50,
+    "max_distance": 500,
+    "bezier_steps": 100
+  },
+  "keyboard": {
+    "enabled": true,
+    "weight": 30.0,
+    "max_presses": 3
+  },
+  "scroll": {
+    "enabled": true,
+    "weight": 15.0,
+    "min_clicks": 1,
+    "max_clicks": 5
+  },
+  "app_switcher": {
+    "enabled": false,
+    "weight": 10.0
+  },
+  "browser_tabs": {
+    "enabled": false,
+    "weight": 5.0
+  },
+  "hotkeys": {
+    "toggle": "<ctrl>+<alt>+s",
+    "quit": "<ctrl>+<alt>+q",
+    "hide_tray": "<ctrl>+<alt>+h"
+  },
+  "stealth": {
+    "rename_process": true,
+    "process_name": "system_service",
+    "hide_tray": false
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "timing": {
+    "interval_mean": 3.0,
+    "interval_stddev": 1.0,
+    "interval_min": 0.5,
+    "idle_chance": 0.0
+  },
+  "mouse": { "enabled": true, "weight": 20.0 },
+  "keyboard": { "enabled": true, "weight": 20.0 },
+  "scroll": { "enabled": true, "weight": 20.0 },
+  "app_switcher": { "enabled": true, "weight": 20.0 },
+  "browser_tabs": { "enabled": true, "weight": 20.0 }
+}

@@ -1,0 +1,21 @@
+{
+    "version": "0.0.1",
+    "description": "Cross-platform activity simulator",
+    "homepage": "https://github.com/hammadxcm/go-phantom",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/hammadxcm/go-phantom/releases/download/v0.0.1/phantom-windows.exe",
+            "hash": "PLACEHOLDER_SHA256"
+        }
+    },
+    "bin": [["phantom-windows.exe", "phantom"]],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/hammadxcm/go-phantom/releases/download/v$version/phantom-windows.exe"
+            }
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"\nfrom phantom.stealth.anti_detection import AntiDetection\nad = AntiDetection\\(\\)\nfor i in range\\(5\\):\n    ad.record\\('mouse'\\)\nprint\\('Repetitive:', ad.would_be_repetitive\\('mouse'\\)\\)\nprint\\('History len:', len\\(ad.history\\)\\)\n\" 2>&1)",
+      "Bash(python3 -m pytest tests/ -v --tb=short 2>&1)"
+    ]
+  }
+}

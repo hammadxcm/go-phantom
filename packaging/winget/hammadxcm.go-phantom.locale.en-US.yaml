@@ -1,0 +1,19 @@
+PackageIdentifier: hammadxcm.go-phantom
+PackageVersion: 0.0.1
+PackageLocale: en-US
+Publisher: hammadxcm
+PublisherUrl: https://github.com/hammadxcm
+PackageName: Phantom
+PackageUrl: https://github.com/hammadxcm/go-phantom
+License: MIT
+LicenseUrl: https://github.com/hammadxcm/go-phantom/blob/main/LICENSE
+ShortDescription: Cross-platform activity simulator
+Description: Phantom keeps your computer looking busy with realistic mouse movements, keyboard activity, scrolling, app switching, and browser tab cycling. Stealth mode, system tray, TUI dashboard, global hotkeys, fully configurable.
+Tags:
+  - phantom
+  - activity-simulator
+  - mouse
+  - keyboard
+  - automation
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

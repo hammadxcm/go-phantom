@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.chocolatey.org/2010/07">
+  <metadata>
+    <id>go-phantom</id>
+    <version>0.0.1</version>
+    <title>Phantom</title>
+    <authors>Phantom Contributors</authors>
+    <owners>hammadxcm</owners>
+    <projectUrl>https://github.com/hammadxcm/go-phantom</projectUrl>
+    <licenseUrl>https://github.com/hammadxcm/go-phantom/blob/main/LICENSE</licenseUrl>
+    <iconUrl>https://raw.githubusercontent.com/hammadxcm/go-phantom/main/assets/icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Cross-platform activity simulator that keeps your computer looking busy. Realistic mouse movements, keyboard activity, scrolling, app switching, and browser tab cycling. Stealth mode, system tray, TUI dashboard, global hotkeys, fully configurable.</description>
+    <summary>Cross-platform activity simulator</summary>
+    <tags>phantom activity simulator mouse keyboard automation stealth</tags>
+    <packageSourceUrl>https://github.com/hammadxcm/go-phantom</packageSourceUrl>
+    <bugTrackerUrl>https://github.com/hammadxcm/go-phantom/issues</bugTrackerUrl>
+    <releaseNotes>https://github.com/hammadxcm/go-phantom/blob/main/CHANGELOG.md</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

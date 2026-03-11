@@ -1,0 +1,33 @@
+name: go-phantom
+base: core22
+version: '0.0.1'
+summary: Cross-platform activity simulator
+description: |
+  Phantom keeps your computer looking busy with realistic mouse movements,
+  keyboard activity, scrolling, app switching, and browser tab cycling.
+  Stealth mode, system tray, TUI dashboard, global hotkeys, fully configurable.
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: amd64
+
+apps:
+  phantom:
+    command: phantom
+    plugs:
+      - x11
+      - desktop
+      - desktop-legacy
+      - unity7
+      - home
+
+parts:
+  phantom:
+    plugin: dump
+    source: .
+    organize:
+      phantom-linux-x86_64: phantom
+    stage:
+      - phantom
