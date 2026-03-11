@@ -7,13 +7,13 @@ PackageName: Phantom
 PackageUrl: https://github.com/hammadxcm/go-phantom
 License: MIT
 LicenseUrl: https://github.com/hammadxcm/go-phantom/blob/main/LICENSE
-ShortDescription: Cross-platform activity simulator
-Description: Phantom keeps your computer looking busy with realistic mouse movements, keyboard activity, scrolling, app switching, and browser tab cycling. Stealth mode, system tray, TUI dashboard, global hotkeys, fully configurable.
+ShortDescription: Cross-platform input simulation tool for testing and automation
+Description: Phantom is an open-source input simulation tool for developers and QA engineers. It generates realistic mouse movements, keyboard input, scrolling, and application switching for use in UI testing, screen-lock prevention, demo environments, and accessibility testing. Features include configurable simulation profiles, a TUI dashboard, global hotkeys, and a system tray interface.
 Tags:
-  - phantom
-  - activity-simulator
-  - mouse
-  - keyboard
+  - testing
   - automation
+  - input-simulation
+  - developer-tools
+  - ui-testing
 ManifestType: defaultLocale
 ManifestVersion: 1.6.0
