@@ -5,7 +5,7 @@ InstallerType: portable
 Installers:
   - Architecture: x64
     InstallerUrl: https://github.com/hammadxcm/go-phantom/releases/download/v0.0.1/phantom-windows.exe
-    InstallerSha256: PLACEHOLDER_SHA256
+    InstallerSha256: 7FD26328AAC38B738D86DE360782EEC42C49399C78055E3E2737144DC2508977
     Commands:
       - phantom
 ManifestType: installer
