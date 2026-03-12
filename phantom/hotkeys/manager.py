@@ -12,6 +12,24 @@ from phantom.config.schema import HotkeyConfig
 log = logging.getLogger(__name__)
 
 
+def _patch_global_hotkeys() -> None:
+    """Fix pynput GlobalHotKeys bug where _on_press is called without 'injected' arg.
+
+    Some pynput code paths (notably the Darwin special-keys handler) call
+    on_press(key) without the injected parameter, but GlobalHotKeys._on_press
+    requires it. This patch makes the injected parameter optional.
+    """
+    _original = GlobalHotKeys._on_press
+
+    def _patched_on_press(self, key, injected=False):
+        return _original(self, key, injected)
+
+    GlobalHotKeys._on_press = _patched_on_press
+
+
+_patch_global_hotkeys()
+
+
 class HotkeyManager:
     """Registers and manages global hotkeys using pynput."""
 
