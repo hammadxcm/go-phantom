@@ -14,7 +14,7 @@ class TestMain:
         from phantom.__main__ import main
 
         main()
-        MockApp.assert_called_once_with(config_path=None)
+        MockApp.assert_called_once_with(config_path=None, cli_overrides={})
         MockApp.return_value.run.assert_called_once_with(tui=False, log_handler=None)
 
     @patch("phantom.app.PhantomApp")
@@ -23,7 +23,7 @@ class TestMain:
         from phantom.__main__ import main
 
         main()
-        MockApp.assert_called_once_with(config_path="/tmp/cfg.json")
+        MockApp.assert_called_once_with(config_path="/tmp/cfg.json", cli_overrides={})
 
     @patch("phantom.app.PhantomApp")
     @patch("sys.argv", ["phantom", "-v"])
@@ -50,7 +50,7 @@ class TestMain:
         from phantom.__main__ import main
 
         main()
-        MockApp.assert_called_once_with(config_path=None)
+        MockApp.assert_called_once_with(config_path=None, cli_overrides={})
         call_args = MockApp.return_value.run.call_args
         assert call_args.kwargs["tui"] is True
         assert call_args.kwargs["log_handler"] is not None

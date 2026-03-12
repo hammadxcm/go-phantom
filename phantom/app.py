@@ -51,8 +51,14 @@ def _print_status(state: str) -> None:
 class PhantomApp:
     """Application entry point. Wires config, simulators, scheduler, UI, and hotkeys."""
 
-    def __init__(self, config_path: str | None = None) -> None:
+    def __init__(
+        self,
+        config_path: str | None = None,
+        cli_overrides: dict | None = None,
+    ) -> None:
         self._config_mgr = ConfigManager(config_path)
+        if cli_overrides:
+            self._apply_overrides(cli_overrides)
         self._config_lock = threading.Lock()
         self._stats = Stats()
         self._simulators = self._create_simulators()
@@ -143,6 +149,33 @@ class PhantomApp:
             self._tray.hide()
             with self._config_lock:
                 cfg.stealth.hide_tray = True
+
+    def _apply_overrides(self, overrides: dict) -> None:
+        """Apply CLI overrides to the loaded config."""
+        cfg = self._config_mgr.config
+        all_sims = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
+
+        # Handle --*-only / --only / --all (exclusive selection)
+        if "_only" in overrides:
+            enabled = overrides.pop("_only")
+            for sim in all_sims:
+                sub = getattr(cfg, sim)
+                sub.enabled = sim in enabled
+
+        # Handle --enable (add to existing)
+        if "_enable" in overrides:
+            for sim in overrides.pop("_enable"):
+                getattr(cfg, sim).enabled = True
+
+        # Handle --disable (remove from existing)
+        if "_disable" in overrides:
+            for sim in overrides.pop("_disable"):
+                getattr(cfg, sim).enabled = False
+
+        # Apply section overrides (timing, mouse, keyboard, etc.)
+        for section, values in overrides.items():
+            if isinstance(values, dict):
+                self._config_mgr.update(section, **values)
 
     @staticmethod
     def _create_simulators() -> dict[str, BaseSimulator]:

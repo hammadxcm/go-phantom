@@ -285,20 +285,136 @@ All installed automatically — no manual setup needed:
 ### Quick Start
 
 ```bash
-# Run with defaults (system tray + rich logging)
-python -m phantom
+phantom                    # run with defaults (mouse + keyboard + scroll)
+phantom --tui              # TUI dashboard mode
+phantom -v                 # debug logging
+phantom -c ~/config.json   # custom config file
+```
 
-# Run with TUI dashboard
-python -m phantom --tui
+### Run Individual Simulators
 
-# Run with debug logging
-python -m phantom -v
+```bash
+# Single simulator
+phantom --mouse-only           # mouse movement only
+phantom --keyboard-only        # keyboard modifier keys only
+phantom --scroll-only          # scroll wheel only
 
-# Run with custom config
-python -m phantom -c ~/my-config.json
+# Pick exactly which simulators to run
+phantom --only mouse,scroll              # mouse + scroll, nothing else
+phantom --only keyboard,browser_tabs     # keyboard + tab switching
+phantom --only app_switcher              # app switching only (Cmd/Alt+Tab)
 
-# Using make targets
-make run           # tray mode
+# Add to defaults (mouse + keyboard + scroll are on by default)
+phantom --enable app_switcher            # add app switching
+phantom --enable app_switcher,browser_tabs  # add both
+
+# Remove from defaults
+phantom --disable scroll                 # no scrolling
+phantom --disable mouse,keyboard         # scroll only
+
+# Enable everything
+phantom --all                            # all 5 simulators active
+```
+
+### Timing Control
+
+```bash
+# Fast mode — action every ~3 seconds
+phantom --interval 3.0
+
+# Slow mode — action every ~20 seconds with high variance
+phantom --interval 20.0 --interval-stddev 10.0
+
+# No idle pauses (continuous activity)
+phantom --idle-chance 0
+
+# Lots of idle pauses (25% chance each cycle)
+phantom --idle-chance 0.25
+```
+
+### Simulator Tuning
+
+```bash
+# Mouse: small, smooth movements
+phantom --mouse-only --mouse-distance 20 100 --mouse-speed 150
+
+# Mouse: large, fast movements
+phantom --mouse-only --mouse-distance 200 800 --mouse-speed 30
+
+# Keyboard: single key press per action
+phantom --keyboard-only --key-presses 1
+
+# Scroll: gentle scrolling (1-2 clicks)
+phantom --scroll-only --scroll-clicks 1 2
+
+# Scroll: aggressive scrolling (5-10 clicks)
+phantom --scroll-only --scroll-clicks 5 10
+```
+
+### Weight Control
+
+Weights control how often each simulator is picked. Higher = more frequent.
+
+```bash
+# Mouse-heavy (80% mouse, 20% keyboard)
+phantom --only mouse,keyboard --mouse-weight 80 --keyboard-weight 20
+
+# Equal distribution across all simulators
+phantom --all --mouse-weight 20 --keyboard-weight 20 --scroll-weight 20 \
+  --app-switcher-weight 20 --browser-tabs-weight 20
+
+# Mostly scrolling with some mouse
+phantom --only mouse,scroll --scroll-weight 70 --mouse-weight 30
+```
+
+### Stealth Options
+
+```bash
+# Maximum stealth (rename process + hide tray icon)
+phantom --stealth
+
+# Custom process name
+phantom --process-name "WindowServer"
+
+# No stealth at all
+phantom --no-stealth
+```
+
+### Custom Hotkeys
+
+```bash
+# Change toggle and quit hotkeys
+phantom --hotkey-toggle "<ctrl>+<shift>+f9" --hotkey-quit "<ctrl>+<shift>+f10"
+
+# Change all hotkeys
+phantom --hotkey-toggle "<ctrl>+<alt>+p" \
+        --hotkey-quit "<ctrl>+<alt>+x" \
+        --hotkey-hide "<ctrl>+<alt>+i"
+```
+
+### Combined Examples
+
+```bash
+# Presentation mode: subtle mouse + no idle + stealth + TUI
+phantom --mouse-only --mouse-distance 20 200 --interval 5.0 \
+        --idle-chance 0 --stealth --tui
+
+# Work simulation: all simulators, relaxed timing, custom hotkeys
+phantom --all --interval 15.0 --idle-chance 0.20 \
+        --hotkey-toggle "<ctrl>+<shift>+s"
+
+# Quick test: fast keyboard + scroll, verbose logging
+phantom --only keyboard,scroll --interval 2.0 -v
+
+# Screen-lock prevention: minimal mouse movement every 30 seconds
+phantom --mouse-only --interval 30.0 --interval-stddev 5.0 \
+        --mouse-distance 10 50 --idle-chance 0 --no-stealth
+```
+
+### Using Make Targets
+
+```bash
+make run           # tray mode (defaults)
 make tui           # TUI dashboard
 make run-verbose   # debug logging
 ```
@@ -330,19 +446,32 @@ The `--tui` flag launches a rich terminal dashboard instead of the system tray:
 
 ### CLI Reference
 
-```
-$ python -m phantom --help
+Run `phantom --help` to see all options. Key flags:
 
-usage: phantom [-h] [-c CONFIG] [-v] [--tui]
-
-Cross-platform activity simulator
-
-options:
-  -h, --help           show this help message and exit
-  -c, --config CONFIG  Path to config.json
-  -v, --verbose        Enable debug logging
-  --tui                Launch TUI dashboard (mutually exclusive with system tray)
-```
+| Flag | Description |
+|------|-------------|
+| `-c`, `--config` | Path to config.json |
+| `-v`, `--verbose` | Debug logging |
+| `--tui` | TUI dashboard mode |
+| `--mouse-only` | Mouse simulator only |
+| `--keyboard-only` | Keyboard simulator only |
+| `--scroll-only` | Scroll simulator only |
+| `--only SIMS` | Comma-separated simulators |
+| `--enable SIMS` | Add simulators to defaults |
+| `--disable SIMS` | Remove simulators |
+| `--all` | Enable all 5 simulators |
+| `--interval SEC` | Mean action interval |
+| `--idle-chance P` | Idle probability (0-1) |
+| `--mouse-distance MIN MAX` | Movement range (px) |
+| `--mouse-speed STEPS` | Bezier smoothness |
+| `--key-presses MAX` | Max keys per action |
+| `--scroll-clicks MIN MAX` | Scroll range |
+| `--mouse-weight W` | Mouse frequency weight |
+| `--stealth` | Max stealth mode |
+| `--no-stealth` | Disable stealth |
+| `--process-name NAME` | Custom process name |
+| `--hotkey-toggle KEYS` | Toggle hotkey |
+| `--hotkey-quit KEYS` | Quit hotkey |
 
 ### Global Hotkeys
 

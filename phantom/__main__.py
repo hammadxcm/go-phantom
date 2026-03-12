@@ -7,11 +7,29 @@ import logging
 import sys
 
 
-def main() -> None:
+def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="phantom",
         description="Cross-platform activity simulator",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""\
+examples:
+  phantom                           # run with defaults (mouse + keyboard + scroll)
+  phantom --mouse-only              # mouse movement only
+  phantom --keyboard-only           # keyboard simulation only
+  phantom --only mouse,scroll       # mouse + scroll only
+  phantom --enable app_switcher     # add app switcher to defaults
+  phantom --disable mouse,keyboard  # disable specific simulators
+  phantom --interval 3.0            # faster action interval (default: 8s)
+  phantom --idle-chance 0            # no idle pauses
+  phantom --stealth                 # max stealth (rename process + hide tray)
+  phantom --no-stealth              # disable all stealth features
+  phantom --tui                     # TUI dashboard mode
+  phantom -c myconfig.json          # load custom config file
+""",
     )
+
+    # ─── Core options ────────────────────────────────────────────────────────
     parser.add_argument(
         "-c", "--config",
         help="Path to config.json",
@@ -27,6 +45,227 @@ def main() -> None:
         action="store_true",
         help="Launch TUI dashboard (mutually exclusive with system tray)",
     )
+
+    # ─── Simulator selection ─────────────────────────────────────────────────
+    sim_group = parser.add_argument_group("simulator selection")
+    sim_group.add_argument(
+        "--mouse-only",
+        action="store_true",
+        help="Run mouse simulator only",
+    )
+    sim_group.add_argument(
+        "--keyboard-only",
+        action="store_true",
+        help="Run keyboard simulator only",
+    )
+    sim_group.add_argument(
+        "--scroll-only",
+        action="store_true",
+        help="Run scroll simulator only",
+    )
+    sim_group.add_argument(
+        "--only",
+        metavar="SIMS",
+        help="Simulators to enable: mouse,keyboard,scroll,app_switcher,browser_tabs",
+    )
+    sim_group.add_argument(
+        "--enable",
+        metavar="SIMS",
+        help="Comma-separated list of simulators to enable (added to defaults)",
+    )
+    sim_group.add_argument(
+        "--disable",
+        metavar="SIMS",
+        help="Comma-separated list of simulators to disable",
+    )
+    sim_group.add_argument(
+        "--all",
+        action="store_true",
+        help="Enable all simulators (including app_switcher and browser_tabs)",
+    )
+
+    # ─── Timing overrides ────────────────────────────────────────────────────
+    timing_group = parser.add_argument_group("timing")
+    timing_group.add_argument(
+        "--interval",
+        type=float,
+        metavar="SECONDS",
+        help="Mean interval between actions (default: 8.0)",
+    )
+    timing_group.add_argument(
+        "--interval-stddev",
+        type=float,
+        metavar="SECONDS",
+        help="Standard deviation of interval (default: 4.0)",
+    )
+    timing_group.add_argument(
+        "--idle-chance",
+        type=float,
+        metavar="PROB",
+        help="Probability of idle pause per cycle, 0-1 (default: 0.10)",
+    )
+
+    # ─── Simulator tuning ────────────────────────────────────────────────────
+    tuning_group = parser.add_argument_group("simulator tuning")
+    tuning_group.add_argument(
+        "--mouse-distance",
+        type=int,
+        nargs=2,
+        metavar=("MIN", "MAX"),
+        help="Mouse movement distance range in pixels (default: 50 500)",
+    )
+    tuning_group.add_argument(
+        "--mouse-speed",
+        type=int,
+        metavar="STEPS",
+        help="Bezier curve steps — higher = smoother/slower (default: 100)",
+    )
+    tuning_group.add_argument(
+        "--key-presses",
+        type=int,
+        metavar="MAX",
+        help="Max modifier key presses per action (default: 3)",
+    )
+    tuning_group.add_argument(
+        "--scroll-clicks",
+        type=int,
+        nargs=2,
+        metavar=("MIN", "MAX"),
+        help="Scroll click range per action (default: 1 5)",
+    )
+
+    # ─── Weight overrides ────────────────────────────────────────────────────
+    weight_group = parser.add_argument_group("weights (higher = more frequent)")
+    weight_group.add_argument(
+        "--mouse-weight", type=float, metavar="W", help="Mouse weight (default: 40)",
+    )
+    weight_group.add_argument(
+        "--keyboard-weight", type=float, metavar="W", help="Keyboard weight (default: 30)",
+    )
+    weight_group.add_argument(
+        "--scroll-weight", type=float, metavar="W", help="Scroll weight (default: 15)",
+    )
+    weight_group.add_argument(
+        "--app-switcher-weight", type=float, metavar="W", help="App switcher weight (default: 10)",
+    )
+    weight_group.add_argument(
+        "--browser-tabs-weight", type=float, metavar="W", help="Browser tabs weight (default: 5)",
+    )
+
+    # ─── Stealth ─────────────────────────────────────────────────────────────
+    stealth_group = parser.add_argument_group("stealth")
+    stealth_group.add_argument(
+        "--stealth",
+        action="store_true",
+        help="Max stealth: rename process + hide tray icon",
+    )
+    stealth_group.add_argument(
+        "--no-stealth",
+        action="store_true",
+        help="Disable all stealth features",
+    )
+    stealth_group.add_argument(
+        "--process-name",
+        metavar="NAME",
+        help="Custom process name for masking (default: system_service)",
+    )
+
+    # ─── Hotkeys ─────────────────────────────────────────────────────────────
+    hotkey_group = parser.add_argument_group("hotkeys")
+    hotkey_group.add_argument(
+        "--hotkey-toggle", metavar="KEYS", help="Toggle hotkey (default: <ctrl>+<alt>+s)",
+    )
+    hotkey_group.add_argument(
+        "--hotkey-quit", metavar="KEYS", help="Quit hotkey (default: <ctrl>+<alt>+q)",
+    )
+    hotkey_group.add_argument(
+        "--hotkey-hide", metavar="KEYS", help="Hide tray hotkey (default: <ctrl>+<alt>+h)",
+    )
+
+    return parser
+
+
+_ALL_SIMS = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
+
+
+def _apply_cli_overrides(args: argparse.Namespace) -> dict:
+    """Build a config override dict from CLI arguments."""
+    overrides: dict = {}
+
+    # ─── Simulator selection ─────────────────────────────────────────────
+    if args.mouse_only:
+        overrides["_only"] = {"mouse"}
+    elif args.keyboard_only:
+        overrides["_only"] = {"keyboard"}
+    elif args.scroll_only:
+        overrides["_only"] = {"scroll"}
+    elif args.only:
+        overrides["_only"] = {s.strip() for s in args.only.split(",")} & _ALL_SIMS
+    elif getattr(args, "all", False):
+        overrides["_only"] = _ALL_SIMS.copy()
+
+    if args.enable:
+        overrides["_enable"] = {s.strip() for s in args.enable.split(",")} & _ALL_SIMS
+    if args.disable:
+        overrides["_disable"] = {s.strip() for s in args.disable.split(",")} & _ALL_SIMS
+
+    # ─── Timing ──────────────────────────────────────────────────────────
+    if args.interval is not None:
+        overrides.setdefault("timing", {})["interval_mean"] = args.interval
+    if args.interval_stddev is not None:
+        overrides.setdefault("timing", {})["interval_stddev"] = args.interval_stddev
+    if args.idle_chance is not None:
+        overrides.setdefault("timing", {})["idle_chance"] = args.idle_chance
+
+    # ─── Mouse tuning ────────────────────────────────────────────────────
+    if args.mouse_distance:
+        overrides.setdefault("mouse", {})["min_distance"] = args.mouse_distance[0]
+        overrides["mouse"]["max_distance"] = args.mouse_distance[1]
+    if args.mouse_speed is not None:
+        overrides.setdefault("mouse", {})["bezier_steps"] = args.mouse_speed
+
+    # ─── Keyboard tuning ─────────────────────────────────────────────────
+    if args.key_presses is not None:
+        overrides.setdefault("keyboard", {})["max_presses"] = args.key_presses
+
+    # ─── Scroll tuning ───────────────────────────────────────────────────
+    if args.scroll_clicks:
+        overrides.setdefault("scroll", {})["min_clicks"] = args.scroll_clicks[0]
+        overrides["scroll"]["max_clicks"] = args.scroll_clicks[1]
+
+    # ─── Weights ─────────────────────────────────────────────────────────
+    if args.mouse_weight is not None:
+        overrides.setdefault("mouse", {})["weight"] = args.mouse_weight
+    if args.keyboard_weight is not None:
+        overrides.setdefault("keyboard", {})["weight"] = args.keyboard_weight
+    if args.scroll_weight is not None:
+        overrides.setdefault("scroll", {})["weight"] = args.scroll_weight
+    if args.app_switcher_weight is not None:
+        overrides.setdefault("app_switcher", {})["weight"] = args.app_switcher_weight
+    if args.browser_tabs_weight is not None:
+        overrides.setdefault("browser_tabs", {})["weight"] = args.browser_tabs_weight
+
+    # ─── Stealth ─────────────────────────────────────────────────────────
+    if args.stealth:
+        overrides["stealth"] = {"rename_process": True, "hide_tray": True}
+    elif args.no_stealth:
+        overrides["stealth"] = {"rename_process": False, "hide_tray": False}
+    if args.process_name:
+        overrides.setdefault("stealth", {})["process_name"] = args.process_name
+
+    # ─── Hotkeys ─────────────────────────────────────────────────────────
+    if args.hotkey_toggle:
+        overrides.setdefault("hotkeys", {})["toggle"] = args.hotkey_toggle
+    if args.hotkey_quit:
+        overrides.setdefault("hotkeys", {})["quit"] = args.hotkey_quit
+    if args.hotkey_hide:
+        overrides.setdefault("hotkeys", {})["hide_tray"] = args.hotkey_hide
+
+    return overrides
+
+
+def main() -> None:
+    parser = _build_parser()
     args = parser.parse_args()
 
     level = logging.DEBUG if args.verbose else logging.INFO
@@ -65,7 +304,8 @@ def main() -> None:
 
     from phantom.app import PhantomApp
 
-    app = PhantomApp(config_path=args.config)
+    overrides = _apply_cli_overrides(args)
+    app = PhantomApp(config_path=args.config, cli_overrides=overrides)
     try:
         app.run(tui=args.tui, log_handler=log_handler)
     except KeyboardInterrupt:
