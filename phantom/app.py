@@ -2,35 +2,40 @@
 
 from __future__ import annotations
 
+import atexit
 import logging
+import signal
 import threading
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from phantom.ui.dashboard import Dashboard
 
 import pyautogui
 
 from phantom.config.manager import ConfigManager
+from phantom.constants import ALL_SIMULATORS_SET
 from phantom.core.platform import check_platform_requirements
 from phantom.core.scheduler import Scheduler
 from phantom.core.stats import Stats
 from phantom.hotkeys.manager import HotkeyManager
-from phantom.simulators.app_switcher import AppSwitcherSimulator
+from phantom.simulators import create_simulators
 from phantom.simulators.base import BaseSimulator
-from phantom.simulators.browser_tabs import BrowserTabsSimulator
-from phantom.simulators.keyboard import KeyboardSimulator
-from phantom.simulators.mouse import MouseSimulator
-from phantom.simulators.scroll import ScrollSimulator
 from phantom.stealth.process import mask_process_name
+from phantom.ui.ansi import BOLD, DIM, GREEN, RED, RESET, YELLOW
+from phantom.ui.modes import OutputMode
 from phantom.ui.tray import TrayIcon
 
 log = logging.getLogger(__name__)
 
-# ─── Visual status banners ────────────────────────────────────────────────────
-_GREEN = "\033[0;32m"
-_RED = "\033[0;31m"
-_YELLOW = "\033[1;33m"
-_CYAN = "\033[0;36m"
-_BOLD = "\033[1m"
-_DIM = "\033[2m"
-_RESET = "\033[0m"
+_LOGO = r"""
+ ██████╗ ██╗  ██╗ █████╗ ███╗   ██╗████████╗ ██████╗ ███╗   ███╗
+ ██╔══██╗██║  ██║██╔══██╗████╗  ██║╚══██╔══╝██╔═══██╗████╗ ████║
+ ██████╔╝███████║███████║██╔██╗ ██║   ██║   ██║   ██║██╔████╔██║
+ ██╔═══╝ ██╔══██║██╔══██║██║╚██╗██║   ██║   ██║   ██║██║╚██╔╝██║
+ ██║     ██║  ██║██║  ██║██║ ╚████║   ██║   ╚██████╔╝██║ ╚═╝ ██║
+ ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝
+"""
 
 
 def _print_status(state: str) -> None:
@@ -38,25 +43,79 @@ def _print_status(state: str) -> None:
     import sys as _sys
 
     if state == "on":
-        print(f"\n{_GREEN}{_BOLD}  ▶ Phantom ON  — Simulation running{_RESET}")
-        print(f"{_DIM}    Ctrl+Alt+S to pause  |  Ctrl+Alt+Q to quit{_RESET}\n")
+        print(f"\n{GREEN}{BOLD}  ▶ Phantom ON  — Simulation running{RESET}")
+        print(f"{DIM}    Ctrl+Alt+S to pause  |  Ctrl+Alt+Q to quit{RESET}\n")
     elif state == "off":
-        print(f"\n{_YELLOW}{_BOLD}  ⏸ Phantom PAUSED  — Simulation stopped{_RESET}")
-        print(f"{_DIM}    Ctrl+Alt+S to resume  |  Ctrl+Alt+Q to quit{_RESET}\n")
+        print(f"\n{YELLOW}{BOLD}  ⏸ Phantom PAUSED  — Simulation stopped{RESET}")
+        print(f"{DIM}    Ctrl+Alt+S to resume  |  Ctrl+Alt+Q to quit{RESET}\n")
     elif state == "quit":
-        print(f"\n{_RED}{_BOLD}  ■ Phantom OFF  — Shutting down{_RESET}\n")
+        print(f"\n{RED}{BOLD}  ■ Phantom OFF  — Shutting down{RESET}\n")
     _sys.stdout.flush()
 
 
+def _print_logo(config) -> None:
+    """Print the ASCII art logo with version and simulator info."""
+    try:
+        from rich.console import Console
+        from rich.text import Text
+
+        import phantom
+
+        console = Console()
+        logo_text = Text(_LOGO.strip(), style="bold cyan")
+        console.print(logo_text)
+
+        enabled = sum(
+            1
+            for s in ("mouse", "keyboard", "scroll", "app_switcher", "browser_tabs")
+            if getattr(config, s).enabled
+        )
+        info = Text()
+        info.append(f"  v{phantom.__version__}", style="bold white")
+        info.append(f"  •  {enabled}/5 simulators active", style="dim")
+        info.append(f"  •  ~{config.timing.interval_mean:.1f}s interval", style="dim")
+        console.print(info)
+        console.print()
+    except ImportError:
+        print(_LOGO)
+
+
 class PhantomApp:
-    """Application entry point. Wires config, simulators, scheduler, UI, and hotkeys."""
+    """Main application orchestrator.
+
+    Wires together configuration, simulators, scheduler, UI layer, and
+    hotkey management into a single runnable application.
+
+    Attributes:
+        _config_mgr: Manages loading, merging, and persisting configuration.
+        _scheduler: Drives periodic simulator ticks.
+        _tray: System-tray icon for GUI control.
+        _hotkey_mgr: Global hotkey listener (toggle / quit / hide).
+    """
 
     def __init__(
         self,
         config_path: str | None = None,
         cli_overrides: dict | None = None,
+        preset: str | None = None,
     ) -> None:
+        """Initialise PhantomApp and all sub-components.
+
+        Args:
+            config_path: Optional path to a TOML/YAML config file.
+            cli_overrides: Optional dict of CLI flag overrides to apply on
+                top of the loaded configuration.
+            preset: Optional preset name to apply before CLI overrides.
+        """
         self._config_mgr = ConfigManager(config_path)
+
+        # Apply preset before CLI overrides
+        self._preset_name = preset
+        if preset:
+            from phantom.config.presets import apply_preset
+
+            apply_preset(self._config_mgr.config, preset)
+
         if cli_overrides:
             self._apply_overrides(cli_overrides)
         self._config_lock = threading.Lock()
@@ -79,13 +138,24 @@ class PhantomApp:
             on_quit=self._handle_quit,
             on_hide=self._handle_hide,
         )
-        self._dashboard = None
+        self._dashboard: Dashboard | None = None
+        self._tail_stop = threading.Event()
 
-    def run(self, tui: bool = False, log_handler=None) -> None:
-        """Start all components. Blocks on tray or TUI event loop (main thread)."""
+    def run(self, mode: OutputMode = OutputMode.TRAY, log_handler=None) -> None:
+        """Start all components and block on the chosen event loop.
+
+        Args:
+            mode: Output mode determining how the UI is presented
+                (tray, TUI, tail, or ghost).
+            log_handler: Optional log handler required for TUI mode to
+                feed log records into the dashboard.
+        """
         # Disable pyautogui failsafe (corner abort)
         pyautogui.FAILSAFE = False
         pyautogui.PAUSE = 0
+
+        atexit.register(self._restore_failsafe)
+        signal.signal(signal.SIGTERM, lambda *_: self._handle_quit())
 
         # Platform checks
         check_platform_requirements()
@@ -101,45 +171,83 @@ class PhantomApp:
         # Auto-start scheduler
         self._scheduler.start()
 
-        if tui and log_handler is not None:
-            from phantom.ui.dashboard import Dashboard
+        if mode == OutputMode.TUI:
+            if log_handler is not None:
+                from phantom.ui.dashboard import Dashboard
 
-            self._dashboard = Dashboard(
-                stats=self._stats,
-                config=cfg,
-                log_handler=log_handler,
-                on_toggle=self._handle_toggle,
-                on_quit=self._handle_quit,
-            )
-            log.info("Phantom started (TUI mode). Press %s to toggle.", cfg.hotkeys.toggle)
-            self._dashboard.run()
+                self._dashboard = Dashboard(
+                    stats=self._stats,
+                    config=cfg,
+                    log_handler=log_handler,
+                    on_toggle=self._handle_toggle,
+                    on_quit=self._handle_quit,
+                    on_sim_toggle=self._handle_sim_toggle,
+                    on_save_config=self._handle_save_config,
+                    on_sim_pause=self._handle_sim_pause,
+                    config_lock=self._config_lock,
+                    preset_name=self._preset_name,
+                )
+                log.info("Phantom started (TUI mode). Press %s to toggle.", cfg.hotkeys.toggle)
+                self._dashboard.run()
+        elif mode == OutputMode.TAIL:
+            self._run_tail_mode(cfg)
+        elif mode == OutputMode.GHOST:
+            self._run_ghost_mode(cfg)
         else:
+            _print_logo(cfg)
             self._tray.update_status(True)
             log.info("Phantom started. Press %s to toggle.", cfg.hotkeys.toggle)
             _print_status("on")
             # Run tray on main thread (required on macOS)
             self._tray.run()
 
+    def _run_tail_mode(self, cfg) -> None:
+        """Streaming colored log mode — no panels, just logs."""
+        _print_logo(cfg)
+        log.info("Phantom started (tail mode). Press Ctrl+C to quit.")
+        _print_status("on")
+        try:
+            self._tail_stop.wait()
+        except KeyboardInterrupt:
+            self._handle_quit()
+
+    def _run_ghost_mode(self, cfg) -> None:
+        """Silent mode — no terminal output, tray icon for GUI control."""
+        self._tray.update_status(True)
+        log.info("Phantom started (ghost mode). Press %s to toggle.", cfg.hotkeys.toggle)
+        # Run tray on main thread (required on macOS)
+        self._tray.run()
+
     def _handle_toggle(self) -> bool:
-        """Toggle scheduler, return new active state."""
+        """Toggle the scheduler between running and paused.
+
+        Returns:
+            ``True`` if the scheduler is now active, ``False`` if paused.
+        """
         active = self._scheduler.toggle()
         log.info("Simulation %s", "started" if active else "paused")
         _print_status("on" if active else "off")
         return active
 
     def _handle_hotkey_toggle(self) -> None:
-        """Handle toggle from hotkey (no return value needed)."""
+        """Handle toggle triggered via global hotkey.
+
+        Delegates to ``_handle_toggle`` and synchronises the tray icon.
+        """
         active = self._handle_toggle()
         self._tray.update_status(active)
 
     def _handle_quit(self) -> None:
+        """Shut down all components in safe order."""
         log.info("Quitting Phantom")
         _print_status("quit")
-        self._scheduler.shutdown()
         self._hotkey_mgr.stop()
+        self._scheduler.shutdown()
+        self._tail_stop.set()
         self._tray.stop()
 
     def _handle_hide(self) -> None:
+        """Toggle tray icon visibility and persist the stealth setting."""
         cfg = self._config_mgr.config
         if cfg.stealth.hide_tray:
             self._tray.show()
@@ -150,15 +258,44 @@ class PhantomApp:
             with self._config_lock:
                 cfg.stealth.hide_tray = True
 
-    def _apply_overrides(self, overrides: dict) -> None:
-        """Apply CLI overrides to the loaded config."""
+    def _handle_sim_toggle(self, sim_name: str) -> None:
+        """Handle individual simulator toggle from TUI."""
         cfg = self._config_mgr.config
-        all_sims = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
+        enabled = getattr(cfg, sim_name).enabled
+        log.info(
+            "Simulator %s %s",
+            sim_name.replace("_", " ").title(),
+            "enabled" if enabled else "disabled",
+        )
+
+    def _handle_sim_pause(self, sim_name: str) -> bool:
+        """Toggle pause for a single simulator.
+
+        Args:
+            sim_name: Internal simulator key (e.g. ``"mouse"``).
+
+        Returns:
+            ``True`` if the simulator is now paused.
+        """
+        return self._scheduler.toggle_sim_pause(sim_name)
+
+    def _handle_save_config(self) -> None:
+        """Persist the current in-memory configuration to disk."""
+        self._config_mgr.save()
+
+    def _apply_overrides(self, overrides: dict) -> None:
+        """Apply CLI flag overrides to the loaded config.
+
+        Args:
+            overrides: Dict produced by the CLI parser containing section
+                dicts and special ``_only``/``_enable``/``_disable`` keys.
+        """
+        cfg = self._config_mgr.config
 
         # Handle --*-only / --only / --all (exclusive selection)
         if "_only" in overrides:
             enabled = overrides.pop("_only")
-            for sim in all_sims:
+            for sim in ALL_SIMULATORS_SET:
                 sub = getattr(cfg, sim)
                 sub.enabled = sim in enabled
 
@@ -178,11 +315,15 @@ class PhantomApp:
                 self._config_mgr.update(section, **values)
 
     @staticmethod
+    def _restore_failsafe() -> None:
+        """Restore pyautogui failsafe on exit."""
+        pyautogui.FAILSAFE = True
+
+    @staticmethod
     def _create_simulators() -> dict[str, BaseSimulator]:
-        return {
-            "mouse": MouseSimulator(),
-            "keyboard": KeyboardSimulator(),
-            "scroll": ScrollSimulator(),
-            "app_switcher": AppSwitcherSimulator(),
-            "browser_tabs": BrowserTabsSimulator(),
-        }
+        """Instantiate all registered simulators.
+
+        Returns:
+            Mapping of simulator name to simulator instance.
+        """
+        return create_simulators()

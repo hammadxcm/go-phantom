@@ -7,6 +7,17 @@ from dataclasses import dataclass, field
 
 @dataclass
 class TimingConfig:
+    """Timing parameters that govern action intervals and idle pauses.
+
+    Attributes:
+        interval_mean: Mean delay in seconds between simulated actions.
+        interval_stddev: Standard deviation for the interval distribution.
+        interval_min: Hard lower bound on the interval in seconds.
+        idle_chance: Probability (0-1) of entering an idle pause each cycle.
+        idle_min: Minimum idle pause duration in seconds.
+        idle_max: Maximum idle pause duration in seconds.
+    """
+
     interval_mean: float = 8.0
     interval_stddev: float = 4.0
     interval_min: float = 0.5
@@ -14,45 +25,128 @@ class TimingConfig:
     idle_min: float = 15.0
     idle_max: float = 120.0
 
+    def __post_init__(self) -> None:
+        self.idle_chance = max(0.0, min(1.0, self.idle_chance))
+        self.interval_min = max(0.01, self.interval_min)
+        self.interval_mean = max(self.interval_min, self.interval_mean)
+        self.interval_stddev = max(0.0, self.interval_stddev)
+        self.idle_min = max(0.0, self.idle_min)
+        self.idle_max = max(self.idle_min, self.idle_max)
+
 
 @dataclass
 class MouseConfig:
+    """Configuration for the mouse-movement simulator.
+
+    Attributes:
+        enabled: Whether the mouse simulator is active.
+        weight: Relative selection weight among enabled simulators.
+        min_distance: Minimum cursor travel distance in pixels.
+        max_distance: Maximum cursor travel distance in pixels.
+        bezier_steps: Number of intermediate points on the Bezier curve.
+    """
+
     enabled: bool = True
     weight: float = 40.0
     min_distance: int = 50
     max_distance: int = 500
     bezier_steps: int = 100
 
+    def __post_init__(self) -> None:
+        self.weight = max(0.0, self.weight)
+        self.min_distance = max(0, self.min_distance)
+        self.max_distance = max(self.min_distance, self.max_distance)
+        self.bezier_steps = max(1, self.bezier_steps)
+
 
 @dataclass
 class KeyboardConfig:
+    """Configuration for the keyboard simulator.
+
+    Attributes:
+        enabled: Whether the keyboard simulator is active.
+        weight: Relative selection weight among enabled simulators.
+        max_presses: Maximum number of key presses per action.
+    """
+
     enabled: bool = True
     weight: float = 30.0
     max_presses: int = 3
 
+    def __post_init__(self) -> None:
+        self.weight = max(0.0, self.weight)
+        self.max_presses = max(1, self.max_presses)
+
 
 @dataclass
 class ScrollConfig:
+    """Configuration for the scroll-wheel simulator.
+
+    Attributes:
+        enabled: Whether the scroll simulator is active.
+        weight: Relative selection weight among enabled simulators.
+        min_clicks: Minimum number of scroll clicks per action.
+        max_clicks: Maximum number of scroll clicks per action.
+    """
+
     enabled: bool = True
     weight: float = 15.0
     min_clicks: int = 1
     max_clicks: int = 5
 
+    def __post_init__(self) -> None:
+        self.weight = max(0.0, self.weight)
+        self.min_clicks = max(1, self.min_clicks)
+        self.max_clicks = max(self.min_clicks, self.max_clicks)
+
 
 @dataclass
 class AppSwitcherConfig:
+    """Configuration for the application-switcher simulator.
+
+    Attributes:
+        enabled: Whether the app-switcher simulator is active.
+        weight: Relative selection weight among enabled simulators.
+    """
+
     enabled: bool = False
     weight: float = 10.0
+
+    def __post_init__(self) -> None:
+        self.weight = max(0.0, self.weight)
 
 
 @dataclass
 class BrowserTabsConfig:
+    """Configuration for the browser-tab switching simulator.
+
+    Attributes:
+        enabled: Whether the browser-tabs simulator is active.
+        weight: Relative selection weight among enabled simulators.
+        context_aware: Use the active-window context to pick shortcuts.
+        backward_chance: Probability (0-1) of navigating backward instead of forward.
+    """
+
     enabled: bool = False
     weight: float = 5.0
+    context_aware: bool = True
+    backward_chance: float = 0.3
+
+    def __post_init__(self) -> None:
+        self.weight = max(0.0, self.weight)
+        self.backward_chance = max(0.0, min(1.0, self.backward_chance))
 
 
 @dataclass
 class HotkeyConfig:
+    """Global hotkey bindings for runtime control.
+
+    Attributes:
+        toggle: Key combination to pause/resume simulation.
+        quit: Key combination to quit the application.
+        hide_tray: Key combination to hide the system-tray icon.
+    """
+
     toggle: str = "<ctrl>+<alt>+s"
     quit: str = "<ctrl>+<alt>+q"
     hide_tray: str = "<ctrl>+<alt>+h"
@@ -60,6 +154,14 @@ class HotkeyConfig:
 
 @dataclass
 class StealthConfig:
+    """Stealth and anti-detection settings.
+
+    Attributes:
+        rename_process: Whether to rename the running process.
+        process_name: Name to use when process renaming is enabled.
+        hide_tray: Whether to hide the system-tray icon on startup.
+    """
+
     rename_process: bool = True
     process_name: str = "system_service"
     hide_tray: bool = False
@@ -67,6 +169,19 @@ class StealthConfig:
 
 @dataclass
 class PhantomConfig:
+    """Top-level configuration aggregating all subsystem configs.
+
+    Attributes:
+        timing: Timing and interval parameters.
+        mouse: Mouse-movement simulator settings.
+        keyboard: Keyboard simulator settings.
+        scroll: Scroll-wheel simulator settings.
+        app_switcher: Application-switcher simulator settings.
+        browser_tabs: Browser-tab switching simulator settings.
+        hotkeys: Global hotkey bindings.
+        stealth: Stealth and anti-detection settings.
+    """
+
     timing: TimingConfig = field(default_factory=TimingConfig)
     mouse: MouseConfig = field(default_factory=MouseConfig)
     keyboard: KeyboardConfig = field(default_factory=KeyboardConfig)

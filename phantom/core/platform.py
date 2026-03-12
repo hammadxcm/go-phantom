@@ -12,12 +12,22 @@ log = logging.getLogger(__name__)
 
 
 class OS(enum.Enum):
+    """Supported operating systems."""
+
     WINDOWS = "windows"
     MACOS = "macos"
     LINUX = "linux"
 
 
 def current_os() -> OS:
+    """Detect the current operating system.
+
+    Returns:
+        The ``OS`` enum member for this platform.
+
+    Raises:
+        RuntimeError: If the platform is not Windows, macOS, or Linux.
+    """
     system = platform.system().lower()
     if system == "darwin":
         return OS.MACOS
@@ -29,11 +39,23 @@ def current_os() -> OS:
 
 
 def is_wayland() -> bool:
+    """Check whether the session is running under Wayland.
+
+    Returns:
+        ``True`` if ``XDG_SESSION_TYPE`` is ``"wayland"``.
+    """
     return os.environ.get("XDG_SESSION_TYPE", "").lower() == "wayland"
 
 
 def check_platform_requirements() -> list[str]:
-    """Return a list of warnings for the current platform."""
+    """Return a list of platform-specific warnings.
+
+    Checks for known incompatibilities such as Wayland sessions on
+    Linux and missing Accessibility permission on macOS.
+
+    Returns:
+        Human-readable warning strings (empty list if none).
+    """
     warnings: list[str] = []
     host = current_os()
 

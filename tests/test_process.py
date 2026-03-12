@@ -33,7 +33,7 @@ class TestMaskProcessName:
         mock_mask.assert_called_once_with("test")
 
     @patch("phantom.stealth.process.current_os", return_value=OS.LINUX)
-    @patch("phantom.stealth.process._mask_linux", side_effect=Exception("bad"))
+    @patch("phantom.stealth.process._mask_linux", side_effect=OSError("bad"))
     def test_exception_returns_false(self, mock_mask, mock_os):
         assert mask_process_name("test") is False
 
@@ -45,6 +45,7 @@ class TestMaskLinux:
 
     def test_without_setproctitle(self):
         import sys
+
         # Temporarily remove setproctitle if present
         saved = sys.modules.get("setproctitle")
         sys.modules["setproctitle"] = None  # type: ignore
@@ -78,29 +79,17 @@ class TestMaskMacOS:
     def test_with_setproctitle(self):
         assert _mask_macos("test") is True
 
-    @patch("phantom.stealth.process.ctypes.CDLL")
-    def test_fallback_libc(self, mock_cdll):
+    def test_without_setproctitle_returns_false(self):
         import sys
-        saved = sys.modules.get("setproctitle")
-        sys.modules["setproctitle"] = None  # type: ignore
-        try:
-            _mask_macos("test")
-            # May succeed via libc fallback or fail gracefully
-        finally:
-            if saved is not None:
-                sys.modules["setproctitle"] = saved
-            elif "setproctitle" in sys.modules:
-                del sys.modules["setproctitle"]
 
-    @patch("phantom.stealth.process.ctypes.CDLL", side_effect=OSError("no libc"))
-    def test_all_fail(self, mock_cdll):
-        import sys
         saved = sys.modules.get("setproctitle")
         sys.modules["setproctitle"] = None  # type: ignore
         try:
-            _mask_macos("test")
-            # When setproctitle import fails (None module), the behavior
-            # depends on the import mechanism
+            result = _mask_macos("test")
+            # Without setproctitle, should return False (no libc fallback)
+            assert result is False
+        except ImportError:
+            pass  # Also acceptable if import mechanism raises
         finally:
             if saved is not None:
                 sys.modules["setproctitle"] = saved

@@ -5,10 +5,14 @@ from __future__ import annotations
 import logging
 from unittest.mock import MagicMock
 
+import pytest
+from rich.table import Table
+from rich.text import Text
+
 from phantom.config.schema import PhantomConfig
 from phantom.core.stats import Stats
-from phantom.ui.dashboard import Dashboard, _format_uptime
-from phantom.ui.log_handler import DequeHandler
+from phantom.ui.dashboard import Dashboard, PhantomDashboard, _format_uptime
+from phantom.ui.themes import THEMES
 
 
 class TestFormatUptime:
@@ -28,138 +32,289 @@ class TestFormatUptime:
         assert _format_uptime(86400) == "24:00:00"
 
 
-class TestDashboardBuild:
-    def _make_dashboard(self):
-        stats = Stats()
-        config = PhantomConfig()
-        handler = DequeHandler(maxlen=50)
-        handler.setFormatter(logging.Formatter("%(message)s"))
-        on_toggle = MagicMock(return_value=True)
-        on_quit = MagicMock()
-        dash = Dashboard(stats, config, handler, on_toggle, on_quit)
-        return dash, stats, handler, on_toggle, on_quit
-
-    def test_build_layout_returns_layout(self):
-        dash, _, _, _, _ = self._make_dashboard()
-        from rich.layout import Layout
-
-        layout = dash._build_layout()
-        assert isinstance(layout, Layout)
-
-    def test_build_header_running(self):
-        dash, stats, _, _, _ = self._make_dashboard()
-        stats.mark_active(True)
-        snap = stats.snapshot()
-        panel = dash._build_header(snap)
-        from rich.panel import Panel
-
-        assert isinstance(panel, Panel)
-
-    def test_build_header_paused(self):
-        dash, stats, _, _, _ = self._make_dashboard()
-        snap = stats.snapshot()  # active=False by default
-        panel = dash._build_header(snap)
-        from rich.panel import Panel
-
-        assert isinstance(panel, Panel)
-
-    def test_build_stats_panel_empty(self):
-        dash, stats, _, _, _ = self._make_dashboard()
-        snap = stats.snapshot()
-        panel = dash._build_stats_panel(snap)
-        from rich.panel import Panel
-
-        assert isinstance(panel, Panel)
-
-    def test_build_stats_panel_with_actions(self):
-        dash, stats, _, _, _ = self._make_dashboard()
-        stats.record_action("mouse")
-        stats.record_action("mouse")
-        stats.record_action("keyboard")
-        snap = stats.snapshot()
-        panel = dash._build_stats_panel(snap)
-        from rich.panel import Panel
-
-        assert isinstance(panel, Panel)
-
-    def test_build_logs_panel_empty(self):
-        dash, _, _, _, _ = self._make_dashboard()
-        panel = dash._build_logs_panel()
-        from rich.panel import Panel
-
-        assert isinstance(panel, Panel)
-
-    def test_build_logs_panel_with_lines(self):
-        dash, _, handler, _, _ = self._make_dashboard()
-        logger = logging.getLogger("test.dash.logs")
-        logger.addHandler(handler)
-        logger.setLevel(logging.DEBUG)
-        logger.info("test message")
-        panel = dash._build_logs_panel()
-        from rich.panel import Panel
-
-        assert isinstance(panel, Panel)
-        logger.removeHandler(handler)
-
-    def test_build_footer(self):
-        dash, _, _, _, _ = self._make_dashboard()
-        panel = dash._build_footer()
-        from rich.panel import Panel
-
-        assert isinstance(panel, Panel)
-
-
 class TestDashboardActions:
-    def test_handle_key_quit(self):
-        stats = Stats()
-        config = PhantomConfig()
-        handler = DequeHandler()
-        on_toggle = MagicMock(return_value=True)
+    def test_action_quit(self, dashboard):
+        dashboard.action_quit_phantom()
+        dashboard._on_quit.assert_called_once()
+
+    def test_action_toggle(self, dashboard):
+        dashboard.action_toggle_all()
+        dashboard._on_toggle.assert_called_once()
+
+    def test_handle_key_quit(self, dashboard):
+        dashboard.handle_key("q")
+        dashboard._on_quit.assert_called_once()
+
+    def test_handle_key_toggle(self, dashboard):
+        dashboard.handle_key("s")
+        dashboard._on_toggle.assert_called_once()
+
+    def test_handle_key_uppercase(self, dashboard):
+        dashboard.handle_key("Q")
+        dashboard._on_quit.assert_called_once()
+
+    def test_handle_key_unknown(self, dashboard):
+        dashboard.handle_key("x")
+        dashboard._on_toggle.assert_not_called()
+        dashboard._on_quit.assert_not_called()
+
+    def test_stop_calls_exit(self, dashboard, monkeypatch):
+        exit_mock = MagicMock()
+        monkeypatch.setattr(dashboard, "exit", exit_mock)
+        dashboard.stop()
+        exit_mock.assert_called_once()
+
+    def test_sim_select_and_deselect_toggle(self, log_handler):
+        on_sim_toggle = MagicMock()
+        dash = Dashboard(
+            stats=Stats(),
+            config=PhantomConfig(),
+            log_handler=log_handler,
+            on_toggle=MagicMock(),
+            on_quit=MagicMock(),
+            on_sim_toggle=on_sim_toggle,
+        )
+
+        dash.action_sim_select("1")
+        assert dash._selected_sim == 1
+        on_sim_toggle.assert_not_called()
+
+        dash.action_sim_select("1")
+        assert dash._selected_sim is None
+        on_sim_toggle.assert_called_once_with("mouse")
+
+    def test_weight_adjust_selected_sim(self, dashboard):
+        dashboard.action_sim_select("1")
+        original_weight = dashboard._config.mouse.weight
+        dashboard.action_speed_up()
+        assert dashboard._config.mouse.weight == original_weight + 5.0
+
+        dashboard.action_speed_down()
+        assert dashboard._config.mouse.weight == original_weight
+
+    def test_weight_adjust_no_selection_changes_interval(self, dashboard):
+        original = dashboard._config.timing.interval_mean
+        dashboard.action_speed_up()
+        assert dashboard._config.timing.interval_mean == original - 1.0
+
+    def test_space_pauses_selected_sim(self, log_handler):
+        on_sim_pause = MagicMock(return_value=True)
+        dash = Dashboard(
+            stats=Stats(),
+            config=PhantomConfig(),
+            log_handler=log_handler,
+            on_toggle=MagicMock(),
+            on_quit=MagicMock(),
+            on_sim_pause=on_sim_pause,
+        )
+
+        dash.action_sim_select("1")
+        dash.action_pause_sim()
+        on_sim_pause.assert_called_once_with("mouse")
+        assert "mouse" in dash._paused_sims
+
+    def test_theme_cycle(self, dashboard):
+        assert dashboard._theme_name == "default"
+        dashboard.action_cycle_theme()
+        assert dashboard._theme_name == "hacker"
+        dashboard.action_cycle_theme()
+        assert dashboard._theme_name == "warm"
+        dashboard.action_cycle_theme()
+        assert dashboard._theme_name == "default"
+
+    def test_preset_cycle(self, dashboard):
+        dashboard.action_cycle_preset()
+        assert dashboard._preset_name is not None
+
+    def test_save_config(self, log_handler):
+        on_save = MagicMock()
+        dash = Dashboard(
+            stats=Stats(),
+            config=PhantomConfig(),
+            log_handler=log_handler,
+            on_toggle=MagicMock(),
+            on_quit=MagicMock(),
+            on_save_config=on_save,
+        )
+        dash.action_save_config()
+        on_save.assert_called_once()
+
+    def test_flash_message(self, dashboard):
+        dashboard._flash("test msg")
+        assert dashboard._flash_msg == "test msg"
+        assert dashboard._flash_until > 0
+
+
+class TestArrowKeyNavigation:
+    def test_arrow_down_selects_first(self, dashboard):
+        assert dashboard._selected_sim is None
+        dashboard.action_arrow_down()
+        assert dashboard._selected_sim == 1
+
+    def test_arrow_down_wraps(self, dashboard):
+        dashboard._selected_sim = 5
+        dashboard.action_arrow_down()
+        assert dashboard._selected_sim == 1
+
+    def test_arrow_up_selects_last(self, dashboard):
+        assert dashboard._selected_sim is None
+        dashboard.action_arrow_up()
+        assert dashboard._selected_sim == 5
+
+    def test_arrow_up_wraps(self, dashboard):
+        dashboard._selected_sim = 1
+        dashboard.action_arrow_up()
+        assert dashboard._selected_sim == 5
+
+    def test_arrow_up_down_cycle(self, dashboard):
+        dashboard.action_arrow_down()  # 1
+        dashboard.action_arrow_down()  # 2
+        dashboard.action_arrow_down()  # 3
+        assert dashboard._selected_sim == 3
+        dashboard.action_arrow_up()  # 2
+        assert dashboard._selected_sim == 2
+
+    def test_arrow_right_via_handle_key(self, dashboard):
+        dashboard.action_arrow_down()
+        original = dashboard._config.mouse.weight
+        dashboard.handle_key("RIGHT")
+        assert dashboard._config.mouse.weight == original + 5.0
+
+    def test_arrow_left_via_handle_key(self, dashboard):
+        dashboard.action_arrow_down()
+        original = dashboard._config.mouse.weight
+        dashboard.handle_key("LEFT")
+        assert dashboard._config.mouse.weight == max(1.0, original - 5.0)
+
+
+class TestBuildMethods:
+    def test_build_header_running(self, dashboard):
+        dashboard._stats.mark_active(True)
+        snap = dashboard._stats.snapshot()
+        result = dashboard._build_header(snap)
+        assert isinstance(result, Text)
+
+    def test_build_header_paused(self, dashboard):
+        snap = dashboard._stats.snapshot()
+        result = dashboard._build_header(snap)
+        assert isinstance(result, Text)
+
+    def test_build_stats_table(self, dashboard):
+        snap = dashboard._stats.snapshot()
+        result = dashboard._build_stats_table(snap)
+        assert isinstance(result, Table)
+
+    def test_build_stats_with_actions(self, dashboard):
+        dashboard._stats.record_action("mouse")
+        dashboard._stats.record_action("keyboard")
+        snap = dashboard._stats.snapshot()
+        result = dashboard._build_stats_table(snap)
+        assert isinstance(result, Table)
+
+    def test_build_preview_text_empty(self, dashboard):
+        result = dashboard._build_preview_text()
+        assert isinstance(result, Text)
+
+    def test_build_preview_text_with_sim_logs(self, dashboard):
+        logger = logging.getLogger("phantom.simulators.mouse")
+        logger.addHandler(dashboard._log_handler)
+        logger.setLevel(logging.DEBUG)
+        logger.info("moved to (450, 320)")
+        result = dashboard._build_preview_text()
+        assert isinstance(result, Text)
+        logger.removeHandler(dashboard._log_handler)
+
+    def test_build_footer(self, dashboard):
+        result = dashboard._build_footer()
+        assert isinstance(result, Text)
+
+
+class TestThemes:
+    def test_all_themes_have_required_keys(self):
+        required = {
+            "header_style",
+            "panel_border",
+            "title_style",
+            "sim_colors",
+            "status_on",
+            "status_off",
+            "status_paused",
+            "footer_style",
+            "flash_style",
+            "app_background",
+        }
+        for name, theme in THEMES.items():
+            assert required <= set(theme.keys()), f"Theme {name!r} missing keys"
+
+    def test_all_themes_have_sim_colors(self):
+        sims = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
+        for name, theme in THEMES.items():
+            assert sims <= set(theme["sim_colors"].keys()), (
+                f"Theme {name!r} missing sim colors"
+            )
+
+
+class TestBackwardCompat:
+    def test_alias_exists(self):
+        assert Dashboard is PhantomDashboard
+
+
+@pytest.mark.asyncio
+class TestTUIIntegration:
+    async def test_tui_renders(self, default_config, log_handler):
+        from textual.widgets import RichLog, Static
+
+        app = PhantomDashboard(
+            stats=Stats(),
+            config=default_config,
+            log_handler=log_handler,
+            on_toggle=MagicMock(return_value=True),
+            on_quit=MagicMock(),
+        )
+        async with app.run_test():
+            assert app.query_one("#header", Static)
+            assert app.query_one("#stats", Static)
+            assert app.query_one("#logs", RichLog)
+            assert app.query_one("#footer", Static)
+            assert app.query_one("#preview", Static)
+
+    async def test_key_press_quit(self, default_config, log_handler):
         on_quit = MagicMock()
-        dash = Dashboard(stats, config, handler, on_toggle, on_quit)
+        app = PhantomDashboard(
+            stats=Stats(),
+            config=default_config,
+            log_handler=log_handler,
+            on_toggle=MagicMock(return_value=True),
+            on_quit=on_quit,
+        )
+        async with app.run_test() as pilot:
+            await pilot.press("q")
+            on_quit.assert_called_once()
 
-        dash.handle_key("q")
-        on_quit.assert_called_once()
+    async def test_help_screen_opens(self, default_config, log_handler):
+        from phantom.ui.dashboard import HelpScreen
 
-    def test_handle_key_toggle(self):
-        stats = Stats()
-        config = PhantomConfig()
-        handler = DequeHandler()
-        on_toggle = MagicMock(return_value=True)
-        on_quit = MagicMock()
-        dash = Dashboard(stats, config, handler, on_toggle, on_quit)
+        app = PhantomDashboard(
+            stats=Stats(),
+            config=default_config,
+            log_handler=log_handler,
+            on_toggle=MagicMock(return_value=True),
+            on_quit=MagicMock(),
+        )
+        async with app.run_test() as pilot:
+            await pilot.press("h")
+            assert isinstance(app.screen, HelpScreen)
 
-        dash.handle_key("s")
-        on_toggle.assert_called_once()
+    async def test_settings_screen_opens(self, default_config, log_handler):
+        from phantom.ui.dashboard import SettingsScreen
 
-    def test_handle_key_uppercase(self):
-        stats = Stats()
-        config = PhantomConfig()
-        handler = DequeHandler()
-        on_toggle = MagicMock(return_value=True)
-        on_quit = MagicMock()
-        dash = Dashboard(stats, config, handler, on_toggle, on_quit)
-
-        dash.handle_key("Q")
-        on_quit.assert_called_once()
-
-    def test_handle_key_unknown(self):
-        stats = Stats()
-        config = PhantomConfig()
-        handler = DequeHandler()
-        on_toggle = MagicMock(return_value=True)
-        on_quit = MagicMock()
-        dash = Dashboard(stats, config, handler, on_toggle, on_quit)
-
-        dash.handle_key("x")  # should not crash
-        on_toggle.assert_not_called()
-        on_quit.assert_not_called()
-
-    def test_stop(self):
-        stats = Stats()
-        config = PhantomConfig()
-        handler = DequeHandler()
-        dash = Dashboard(stats, config, handler, MagicMock(), MagicMock())
-
-        dash.stop()
-        assert dash._stop_event.is_set()
+        app = PhantomDashboard(
+            stats=Stats(),
+            config=default_config,
+            log_handler=log_handler,
+            on_toggle=MagicMock(return_value=True),
+            on_quit=MagicMock(),
+        )
+        async with app.run_test() as pilot:
+            await pilot.press("c")
+            assert isinstance(app.screen, SettingsScreen)

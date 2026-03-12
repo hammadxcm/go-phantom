@@ -22,6 +22,7 @@ from phantom.simulators.scroll import ScrollSimulator
 
 # ---- BaseSimulator ----
 
+
 class TestBaseSimulator:
     def test_cannot_instantiate(self):
         with pytest.raises(TypeError):
@@ -45,6 +46,7 @@ class TestBaseSimulator:
 
 
 # ---- MouseSimulator ----
+
 
 class TestMouseSimulator:
     @patch("phantom.simulators.mouse.time.sleep")
@@ -115,6 +117,7 @@ class TestMouseSimulator:
 
 # ---- KeyboardSimulator ----
 
+
 class TestKeyboardSimulator:
     @patch("phantom.simulators.keyboard.time.sleep")
     @patch("phantom.simulators.keyboard.Controller")
@@ -149,6 +152,7 @@ class TestKeyboardSimulator:
             sim.execute(config)
 
         from pynput.keyboard import Key
+
         press_calls = [c for c in mock_ctrl.press.call_args_list if c[0][0] == Key.caps_lock]
         assert len(press_calls) == 2  # Double tap
 
@@ -167,12 +171,14 @@ class TestKeyboardSimulator:
             sim.execute(config)
 
         from pynput.keyboard import Key
+
         allowed = set(SAFE_KEYS) | {Key.caps_lock}
         for c in mock_ctrl.press.call_args_list:
             assert c[0][0] in allowed
 
 
 # ---- ScrollSimulator ----
+
 
 class TestScrollSimulator:
     @patch("phantom.simulators.scroll.time.sleep")
@@ -209,12 +215,14 @@ class TestScrollSimulator:
 
 # ---- AppSwitcherSimulator ----
 
+
 class TestAppSwitcherSimulator:
     @patch("phantom.simulators.app_switcher.time.sleep")
     @patch("phantom.simulators.app_switcher.Controller")
     @patch("phantom.simulators.app_switcher.current_os")
     def test_execute_switches_app(self, mock_os, MockController, mock_sleep):
         from phantom.core.platform import OS
+
         mock_os.return_value = OS.WINDOWS
         mock_ctrl = MockController.return_value
 
@@ -235,6 +243,7 @@ class TestAppSwitcherSimulator:
         from pynput.keyboard import Key
 
         from phantom.core.platform import OS
+
         mock_os.return_value = OS.MACOS
 
         sim = AppSwitcherSimulator()
@@ -247,6 +256,7 @@ class TestAppSwitcherSimulator:
         from pynput.keyboard import Key
 
         from phantom.core.platform import OS
+
         mock_os.return_value = OS.WINDOWS
 
         sim = AppSwitcherSimulator()
@@ -255,10 +265,12 @@ class TestAppSwitcherSimulator:
 
 # ---- BrowserTabsSimulator ----
 
+
 class TestBrowserTabsSimulator:
     @patch("phantom.simulators.browser_tabs.time.sleep")
     @patch("phantom.simulators.browser_tabs.Controller")
-    def test_execute_switches_tabs(self, MockController, mock_sleep):
+    @patch("phantom.simulators.browser_tabs.get_active_window", return_value=None)
+    def test_execute_switches_tabs(self, mock_window, MockController, mock_sleep):
         mock_ctrl = MockController.return_value
         sim = BrowserTabsSimulator()
         sim._controller = mock_ctrl
@@ -268,8 +280,108 @@ class TestBrowserTabsSimulator:
             sim.execute(config)
 
         from pynput.keyboard import Key
+
         # Should press ctrl+tab twice
         ctrl_presses = [c for c in mock_ctrl.press.call_args_list if c[0][0] == Key.ctrl]
         tab_presses = [c for c in mock_ctrl.press.call_args_list if c[0][0] == Key.tab]
         assert len(ctrl_presses) == 2
         assert len(tab_presses) == 2
+
+    @patch("phantom.simulators.browser_tabs.time.sleep")
+    @patch("phantom.simulators.browser_tabs.Controller")
+    @patch("phantom.simulators.browser_tabs.current_os")
+    @patch("phantom.simulators.browser_tabs.get_active_window")
+    def test_context_aware_chrome_macos(
+        self, mock_window, mock_os, MockController, mock_sleep
+    ):
+        from pynput.keyboard import Key, KeyCode
+
+        from phantom.core.active_window import WindowInfo
+        from phantom.core.platform import OS
+
+        mock_os.return_value = OS.MACOS
+        mock_window.return_value = WindowInfo(
+            app_name="Google Chrome", window_title="GitHub"
+        )
+        mock_ctrl = MockController.return_value
+        sim = BrowserTabsSimulator()
+        sim._controller = mock_ctrl
+        config = BrowserTabsConfig(context_aware=True, backward_chance=0.0)
+
+        with patch("phantom.simulators.browser_tabs.random.randint", return_value=1):
+            sim.execute(config)
+
+        # Chrome on macOS uses Cmd+Shift+]
+        press_calls = [c[0][0] for c in mock_ctrl.press.call_args_list]
+        assert Key.cmd in press_calls
+        assert Key.shift in press_calls
+        assert KeyCode.from_char("]") in press_calls
+
+    @patch("phantom.simulators.browser_tabs.time.sleep")
+    @patch("phantom.simulators.browser_tabs.Controller")
+    @patch("phantom.simulators.browser_tabs.get_active_window", return_value=None)
+    def test_fallback_on_detection_failure(
+        self, mock_window, MockController, mock_sleep
+    ):
+        from pynput.keyboard import Key
+
+        mock_ctrl = MockController.return_value
+        sim = BrowserTabsSimulator()
+        sim._controller = mock_ctrl
+        config = BrowserTabsConfig(context_aware=True)
+
+        with patch("phantom.simulators.browser_tabs.random.randint", return_value=1):
+            sim.execute(config)
+
+        # Falls back to Ctrl+Tab
+        press_calls = [c[0][0] for c in mock_ctrl.press.call_args_list]
+        assert Key.ctrl in press_calls
+        assert Key.tab in press_calls
+
+    @patch("phantom.simulators.browser_tabs.time.sleep")
+    @patch("phantom.simulators.browser_tabs.Controller")
+    def test_context_aware_false(self, MockController, mock_sleep):
+        from pynput.keyboard import Key
+
+        mock_ctrl = MockController.return_value
+        sim = BrowserTabsSimulator()
+        sim._controller = mock_ctrl
+        config = BrowserTabsConfig(context_aware=False)
+
+        with patch("phantom.simulators.browser_tabs.random.randint", return_value=1):
+            sim.execute(config)
+
+        # Should use blind Ctrl+Tab without calling get_active_window
+        press_calls = [c[0][0] for c in mock_ctrl.press.call_args_list]
+        assert Key.ctrl in press_calls
+        assert Key.tab in press_calls
+
+    @patch("phantom.simulators.browser_tabs.time.sleep")
+    @patch("phantom.simulators.browser_tabs.Controller")
+    @patch("phantom.simulators.browser_tabs.current_os")
+    @patch("phantom.simulators.browser_tabs.get_active_window")
+    def test_backward_direction(
+        self, mock_window, mock_os, MockController, mock_sleep
+    ):
+        from pynput.keyboard import Key
+
+        from phantom.core.active_window import WindowInfo
+        from phantom.core.platform import OS
+
+        mock_os.return_value = OS.WINDOWS
+        mock_window.return_value = WindowInfo(
+            app_name="Google Chrome", window_title="Tab"
+        )
+        mock_ctrl = MockController.return_value
+        sim = BrowserTabsSimulator()
+        sim._controller = mock_ctrl
+        config = BrowserTabsConfig(context_aware=True, backward_chance=1.0)
+
+        with patch("phantom.simulators.browser_tabs.random.randint", return_value=1):
+            sim.execute(config)
+
+        # backward_chance=1.0 → always backward → Ctrl+Shift+Tab
+        press_calls = [c[0][0] for c in mock_ctrl.press.call_args_list]
+        assert Key.ctrl in press_calls
+        assert Key.shift in press_calls
+        assert Key.tab in press_calls

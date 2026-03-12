@@ -14,7 +14,11 @@ log = logging.getLogger(__name__)
 
 
 class TrayIcon:
-    """Manages the system tray icon and context menu."""
+    """Manages the system tray icon and context menu.
+
+    Provides Start/Pause, Hide, and Quit menu items and updates
+    the icon image to reflect the current scheduler state.
+    """
 
     def __init__(
         self,
@@ -22,6 +26,13 @@ class TrayIcon:
         on_quit: Callable[[], None],
         on_hide: Callable[[], None],
     ) -> None:
+        """Initialize the tray icon.
+
+        Args:
+            on_toggle: Callback returning ``True`` if now active.
+            on_quit: Callback invoked when the user selects Quit.
+            on_hide: Callback invoked when the user hides the tray.
+        """
         self._on_toggle = on_toggle
         self._on_quit = on_quit
         self._on_hide = on_hide
@@ -40,10 +51,16 @@ class TrayIcon:
         self._icon.run()
 
     def stop(self) -> None:
+        """Stop and remove the tray icon."""
         if self._icon:
             self._icon.stop()
 
     def update_status(self, active: bool) -> None:
+        """Update the tray icon and tooltip to reflect scheduler state.
+
+        Args:
+            active: ``True`` if the scheduler is running.
+        """
         self._active = active
         if self._icon:
             self._icon.icon = create_status_icon(active)
@@ -51,11 +68,13 @@ class TrayIcon:
             self._icon.update_menu()
 
     def hide(self) -> None:
+        """Hide the tray icon without stopping it."""
         if self._icon:
             self._icon.visible = False
             log.info("Tray icon hidden")
 
     def show(self) -> None:
+        """Make the tray icon visible again."""
         if self._icon:
             self._icon.visible = True
             log.info("Tray icon shown")

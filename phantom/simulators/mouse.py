@@ -13,9 +13,20 @@ from phantom.simulators.base import BaseSimulator
 
 
 class MouseSimulator(BaseSimulator):
-    """Moves the mouse along human-like Bezier curves."""
+    """Moves the mouse along human-like Bezier curves.
+
+    Generates randomized Bezier paths with micro-corrections to mimic
+    natural hand movements. Ensures minimum travel distance and applies
+    jitter near the destination.
+    """
 
     def execute(self, config: MouseConfig) -> None:
+        """Move the mouse cursor to a random nearby position.
+
+        Args:
+            config: Mouse simulator settings including distance bounds
+                and Bezier resolution.
+        """
         screen_w, screen_h = pyautogui.size()
         current_x, current_y = pyautogui.position()
 
@@ -35,12 +46,8 @@ class MouseSimulator(BaseSimulator):
         if abs(dx) + abs(dy) < config.min_distance:
             sign_x = 1 if dx >= 0 else -1
             sign_y = 1 if dy >= 0 else -1
-            target_x = self._clamp(
-                current_x + sign_x * config.min_distance, 0, screen_w - 1
-            )
-            target_y = self._clamp(
-                current_y + sign_y * config.min_distance, 0, screen_h - 1
-            )
+            target_x = self._clamp(current_x + sign_x * config.min_distance, 0, screen_w - 1)
+            target_y = self._clamp(current_y + sign_y * config.min_distance, 0, screen_h - 1)
 
         start = (float(current_x), float(current_y))
         end = (float(target_x), float(target_y))
@@ -72,4 +79,14 @@ class MouseSimulator(BaseSimulator):
 
     @staticmethod
     def _clamp(value: int, lo: int, hi: int) -> int:
+        """Constrain a value to the inclusive range ``[lo, hi]``.
+
+        Args:
+            value: The number to clamp.
+            lo: Minimum allowed value.
+            hi: Maximum allowed value.
+
+        Returns:
+            The clamped integer.
+        """
         return max(lo, min(hi, value))

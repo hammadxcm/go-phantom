@@ -40,17 +40,36 @@ class HotkeyManager:
         on_quit: Callable[[], None],
         on_hide: Callable[[], None],
     ) -> None:
+        """Initialize the hotkey manager.
+
+        Args:
+            config: Hotkey configuration with key bindings.
+            on_toggle: Callback for the toggle hotkey.
+            on_quit: Callback for the quit hotkey.
+            on_hide: Callback for the hide-tray hotkey.
+        """
         self._config = config
         self._listener: GlobalHotKeys | None = None
+
+        def _safe(fn: Callable[[], None]) -> Callable[[], None]:
+            """Wrap a callback so exceptions don't crash the hotkey listener."""
+            def wrapper() -> None:
+                try:
+                    fn()
+                except Exception:
+                    log.exception("Hotkey callback failed")
+            return wrapper
+
         hotkey_map: dict[str, Callable] = {
-            config.toggle: on_toggle,
-            config.quit: on_quit,
-            config.hide_tray: on_hide,
+            config.toggle: _safe(on_toggle),
+            config.quit: _safe(on_quit),
+            config.hide_tray: _safe(on_hide),
         }
         self._listener = GlobalHotKeys(hotkey_map)
         self._listener.daemon = True
 
     def start(self) -> None:
+        """Start listening for global hotkeys."""
         if self._listener:
             self._listener.start()
             log.info(
@@ -61,6 +80,7 @@ class HotkeyManager:
             )
 
     def stop(self) -> None:
+        """Stop listening for global hotkeys and unregister them."""
         if self._listener:
             self._listener.stop()
             log.info("Hotkeys unregistered")

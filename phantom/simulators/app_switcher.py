@@ -13,24 +13,42 @@ from phantom.simulators.base import BaseSimulator
 
 
 class AppSwitcherSimulator(BaseSimulator):
-    """Simulates switching between open applications."""
+    """Simulate switching between open applications.
+
+    Uses Alt+Tab on Linux/Windows and Cmd+Tab on macOS to cycle
+    through a random number of open application windows.
+    """
 
     def __init__(self) -> None:
+        """Initialise the app switcher simulator.
+
+        Sets up a keyboard controller and determines the correct
+        modifier key for the current platform.
+        """
         super().__init__()
         self._controller = Controller()
         self._modifier = Key.cmd if current_os() == OS.MACOS else Key.alt
 
     def execute(self, config: AppSwitcherConfig) -> None:
+        """Simulate Alt+Tab or Cmd+Tab app switching.
+
+        Args:
+            config: App switcher simulator configuration.
+        """
         tabs = random.randint(1, 3)
 
         self._controller.press(self._modifier)
-        time.sleep(random.uniform(0.05, 0.10))
+        try:
+            time.sleep(random.uniform(0.05, 0.10))
 
-        for _ in range(tabs):
-            self._controller.press(Key.tab)
-            time.sleep(random.uniform(0.03, 0.08))
-            self._controller.release(Key.tab)
-            time.sleep(random.uniform(0.15, 0.40))
+            for _ in range(tabs):
+                self._controller.press(Key.tab)
+                try:
+                    time.sleep(random.uniform(0.03, 0.08))
+                finally:
+                    self._controller.release(Key.tab)
+                time.sleep(random.uniform(0.15, 0.40))
+        finally:
+            self._controller.release(self._modifier)
 
-        self._controller.release(self._modifier)
         self.log.debug("App switch: %d tabs", tabs)

@@ -37,21 +37,38 @@ _SECTION_MAP = {
 
 
 class ConfigManager:
-    """Thread-safe configuration loader and saver."""
+    """Thread-safe configuration loader and saver.
+
+    Searches for ``config.json`` beside the executable or in
+    ``~/.phantom/``, deserializes it into a ``PhantomConfig``
+    dataclass, and supports live updates and persistence.
+    """
 
     CONFIG_FILENAME = "config.json"
 
     def __init__(self, config_path: str | None = None) -> None:
+        """Initialize the manager and load configuration from disk.
+
+        Args:
+            config_path: Explicit path to a JSON config file. When
+                ``None``, the default resolution order is used.
+        """
         self._lock = threading.Lock()
         self._path = Path(config_path) if config_path else self._resolve_path()
         self._config = self._load()
 
     @property
     def config(self) -> PhantomConfig:
+        """Return the current configuration.
+
+        Returns:
+            The active ``PhantomConfig`` instance.
+        """
         with self._lock:
             return self._config
 
     def save(self) -> None:
+        """Persist the current configuration to disk as JSON."""
         with self._lock:
             self._path.parent.mkdir(parents=True, exist_ok=True)
             data = asdict(self._config)
@@ -59,7 +76,12 @@ class ConfigManager:
             log.info("Config saved to %s", self._path)
 
     def update(self, section: str, **kwargs: Any) -> None:
-        """Update a config section with keyword arguments."""
+        """Update a config section with keyword arguments.
+
+        Args:
+            section: Top-level config section name (e.g. ``"mouse"``).
+            **kwargs: Field names and new values to set.
+        """
         with self._lock:
             sub = getattr(self._config, section, None)
             if sub is None:
@@ -72,7 +94,12 @@ class ConfigManager:
                     log.warning("Unknown key %s.%s", section, key)
 
     def _resolve_path(self) -> Path:
-        """Find config: beside executable, then ~/.phantom/."""
+        """Resolve the configuration file path.
+
+        Returns:
+            Path beside the executable if it exists, otherwise
+            ``~/.phantom/config.json``.
+        """
         exe_dir = Path(sys.executable).parent if getattr(sys, "frozen", False) else Path.cwd()
 
         candidate = exe_dir / self.CONFIG_FILENAME
@@ -87,6 +114,11 @@ class ConfigManager:
         return candidate
 
     def _load(self) -> PhantomConfig:
+        """Load and parse the config file, falling back to defaults.
+
+        Returns:
+            A ``PhantomConfig`` populated from disk or with defaults.
+        """
         if not self._path.exists():
             log.info("No config file found at %s, using defaults", self._path)
             return PhantomConfig()
@@ -101,11 +133,19 @@ class ConfigManager:
 
     @staticmethod
     def _parse(raw: dict[str, Any]) -> PhantomConfig:
+        """Parse a raw JSON dict into a ``PhantomConfig``.
+
+        Args:
+            raw: Deserialized JSON mapping.
+
+        Returns:
+            A fully populated ``PhantomConfig`` instance.
+        """
         kwargs: dict[str, Any] = {}
         for section_name, cls in _SECTION_MAP.items():
             if section_name in raw and isinstance(raw[section_name], dict):
                 # Only pass fields that the dataclass accepts
-                valid_fields = {f for f in cls.__dataclass_fields__}
+                valid_fields = set(cls.__dataclass_fields__)  # type: ignore[attr-defined]
                 filtered = {k: v for k, v in raw[section_name].items() if k in valid_fields}
                 kwargs[section_name] = cls(**filtered)
         return PhantomConfig(**kwargs)

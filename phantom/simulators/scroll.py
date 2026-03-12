@@ -12,9 +12,18 @@ from phantom.simulators.base import BaseSimulator
 
 
 class ScrollSimulator(BaseSimulator):
-    """Simulates mouse wheel scrolling."""
+    """Simulates mouse wheel scrolling.
+
+    Produces vertical scrolls with an occasional horizontal scroll
+    (10% probability) to emulate natural browsing behavior.
+    """
 
     def execute(self, config: ScrollConfig) -> None:
+        """Perform a random scroll sequence.
+
+        Args:
+            config: Scroll simulator settings including click range.
+        """
         clicks = random.randint(config.min_clicks, config.max_clicks)
         direction = random.choice([-1, 1])  # up or down
 
