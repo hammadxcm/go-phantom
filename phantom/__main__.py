@@ -6,8 +6,16 @@ import argparse
 import logging
 import sys
 
+from phantom.constants import ALL_SIMULATORS_SET
+
 
 def _build_parser() -> argparse.ArgumentParser:
+    """Build and return the CLI argument parser.
+
+    Returns:
+        An ``argparse.ArgumentParser`` configured with all phantom
+        sub-commands, flags, and option groups.
+    """
     parser = argparse.ArgumentParser(
         prog="phantom",
         description="Cross-platform activity simulator",
@@ -25,25 +33,49 @@ examples:
   phantom --stealth                 # max stealth (rename process + hide tray)
   phantom --no-stealth              # disable all stealth features
   phantom --tui                     # TUI dashboard mode
+  phantom --tail                    # streaming colored log mode
+  phantom --ghost                   # silent mode, logs to file only
   phantom -c myconfig.json          # load custom config file
 """,
     )
 
     # ─── Core options ────────────────────────────────────────────────────────
     parser.add_argument(
-        "-c", "--config",
+        "-c",
+        "--config",
         help="Path to config.json",
         default=None,
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Enable debug logging",
     )
-    parser.add_argument(
+
+    # ─── Output mode (mutually exclusive) ─────────────────────────────────
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument(
         "--tui",
         action="store_true",
-        help="Launch TUI dashboard (mutually exclusive with system tray)",
+        help="Launch TUI dashboard (mutually exclusive with --tail/--ghost)",
+    )
+    mode_group.add_argument(
+        "--tail",
+        action="store_true",
+        help="Streaming colored logs like tail -f",
+    )
+    mode_group.add_argument(
+        "--ghost",
+        action="store_true",
+        help="Zero terminal output, logs to ~/.phantom/phantom.log",
+    )
+
+    parser.add_argument(
+        "--preset",
+        metavar="NAME",
+        choices=["default", "aggressive", "stealth", "minimal", "presentation"],
+        help="Load a preset profile (default, aggressive, stealth, minimal, presentation)",
     )
 
     # ─── Simulator selection ─────────────────────────────────────────────────
@@ -137,19 +169,34 @@ examples:
     # ─── Weight overrides ────────────────────────────────────────────────────
     weight_group = parser.add_argument_group("weights (higher = more frequent)")
     weight_group.add_argument(
-        "--mouse-weight", type=float, metavar="W", help="Mouse weight (default: 40)",
+        "--mouse-weight",
+        type=float,
+        metavar="W",
+        help="Mouse weight (default: 40)",
     )
     weight_group.add_argument(
-        "--keyboard-weight", type=float, metavar="W", help="Keyboard weight (default: 30)",
+        "--keyboard-weight",
+        type=float,
+        metavar="W",
+        help="Keyboard weight (default: 30)",
     )
     weight_group.add_argument(
-        "--scroll-weight", type=float, metavar="W", help="Scroll weight (default: 15)",
+        "--scroll-weight",
+        type=float,
+        metavar="W",
+        help="Scroll weight (default: 15)",
     )
     weight_group.add_argument(
-        "--app-switcher-weight", type=float, metavar="W", help="App switcher weight (default: 10)",
+        "--app-switcher-weight",
+        type=float,
+        metavar="W",
+        help="App switcher weight (default: 10)",
     )
     weight_group.add_argument(
-        "--browser-tabs-weight", type=float, metavar="W", help="Browser tabs weight (default: 5)",
+        "--browser-tabs-weight",
+        type=float,
+        metavar="W",
+        help="Browser tabs weight (default: 5)",
     )
 
     # ─── Stealth ─────────────────────────────────────────────────────────────
@@ -173,26 +220,35 @@ examples:
     # ─── Hotkeys ─────────────────────────────────────────────────────────────
     hotkey_group = parser.add_argument_group("hotkeys")
     hotkey_group.add_argument(
-        "--hotkey-toggle", metavar="KEYS", help="Toggle hotkey (default: <ctrl>+<alt>+s)",
+        "--hotkey-toggle",
+        metavar="KEYS",
+        help="Toggle hotkey (default: <ctrl>+<alt>+s)",
     )
     hotkey_group.add_argument(
-        "--hotkey-quit", metavar="KEYS", help="Quit hotkey (default: <ctrl>+<alt>+q)",
+        "--hotkey-quit",
+        metavar="KEYS",
+        help="Quit hotkey (default: <ctrl>+<alt>+q)",
     )
     hotkey_group.add_argument(
-        "--hotkey-hide", metavar="KEYS", help="Hide tray hotkey (default: <ctrl>+<alt>+h)",
+        "--hotkey-hide",
+        metavar="KEYS",
+        help="Hide tray hotkey (default: <ctrl>+<alt>+h)",
     )
 
     return parser
 
 
-_ALL_SIMS = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
+def _apply_sim_selection(args: argparse.Namespace, overrides: dict) -> None:
+    """Apply simulator selection flags to the overrides dict.
 
+    Processes ``--mouse-only``, ``--keyboard-only``, ``--scroll-only``,
+    ``--only``, ``--all``, ``--enable``, and ``--disable`` flags.  Unknown
+    simulator names are reported to stderr and silently ignored.
 
-def _apply_cli_overrides(args: argparse.Namespace) -> dict:
-    """Build a config override dict from CLI arguments."""
-    overrides: dict = {}
-
-    # ─── Simulator selection ─────────────────────────────────────────────
+    Args:
+        args: Parsed CLI namespace.
+        overrides: Mutable dict that accumulates config overrides.
+    """
     if args.mouse_only:
         overrides["_only"] = {"mouse"}
     elif args.keyboard_only:
@@ -200,16 +256,43 @@ def _apply_cli_overrides(args: argparse.Namespace) -> dict:
     elif args.scroll_only:
         overrides["_only"] = {"scroll"}
     elif args.only:
-        overrides["_only"] = {s.strip() for s in args.only.split(",")} & _ALL_SIMS
+        user_set = {s.strip() for s in args.only.split(",")}
+        unknown = user_set - ALL_SIMULATORS_SET
+        if unknown:
+            import sys
+            names = ", ".join(sorted(unknown))
+            print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
+        overrides["_only"] = user_set & ALL_SIMULATORS_SET
     elif getattr(args, "all", False):
-        overrides["_only"] = _ALL_SIMS.copy()
+        overrides["_only"] = set(ALL_SIMULATORS_SET)
 
     if args.enable:
-        overrides["_enable"] = {s.strip() for s in args.enable.split(",")} & _ALL_SIMS
+        user_set = {s.strip() for s in args.enable.split(",")}
+        unknown = user_set - ALL_SIMULATORS_SET
+        if unknown:
+            import sys
+            names = ", ".join(sorted(unknown))
+            print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
+        overrides["_enable"] = user_set & ALL_SIMULATORS_SET
     if args.disable:
-        overrides["_disable"] = {s.strip() for s in args.disable.split(",")} & _ALL_SIMS
+        user_set = {s.strip() for s in args.disable.split(",")}
+        unknown = user_set - ALL_SIMULATORS_SET
+        if unknown:
+            import sys
+            names = ", ".join(sorted(unknown))
+            print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
+        overrides["_disable"] = user_set & ALL_SIMULATORS_SET
 
-    # ─── Timing ──────────────────────────────────────────────────────────
+
+def _apply_timing_overrides(args: argparse.Namespace, overrides: dict) -> None:
+    """Apply timing-related CLI flags to the overrides dict.
+
+    Handles ``--interval``, ``--interval-stddev``, and ``--idle-chance``.
+
+    Args:
+        args: Parsed CLI namespace.
+        overrides: Mutable dict that accumulates config overrides.
+    """
     if args.interval is not None:
         overrides.setdefault("timing", {})["interval_mean"] = args.interval
     if args.interval_stddev is not None:
@@ -217,23 +300,39 @@ def _apply_cli_overrides(args: argparse.Namespace) -> dict:
     if args.idle_chance is not None:
         overrides.setdefault("timing", {})["idle_chance"] = args.idle_chance
 
-    # ─── Mouse tuning ────────────────────────────────────────────────────
+
+def _apply_tuning_overrides(args: argparse.Namespace, overrides: dict) -> None:
+    """Apply simulator tuning flags to the overrides dict.
+
+    Handles ``--mouse-distance``, ``--mouse-speed``, ``--key-presses``, and
+    ``--scroll-clicks``.
+
+    Args:
+        args: Parsed CLI namespace.
+        overrides: Mutable dict that accumulates config overrides.
+    """
     if args.mouse_distance:
         overrides.setdefault("mouse", {})["min_distance"] = args.mouse_distance[0]
         overrides["mouse"]["max_distance"] = args.mouse_distance[1]
     if args.mouse_speed is not None:
         overrides.setdefault("mouse", {})["bezier_steps"] = args.mouse_speed
-
-    # ─── Keyboard tuning ─────────────────────────────────────────────────
     if args.key_presses is not None:
         overrides.setdefault("keyboard", {})["max_presses"] = args.key_presses
-
-    # ─── Scroll tuning ───────────────────────────────────────────────────
     if args.scroll_clicks:
         overrides.setdefault("scroll", {})["min_clicks"] = args.scroll_clicks[0]
         overrides["scroll"]["max_clicks"] = args.scroll_clicks[1]
 
-    # ─── Weights ─────────────────────────────────────────────────────────
+
+def _apply_weight_overrides(args: argparse.Namespace, overrides: dict) -> None:
+    """Apply simulator weight flags to the overrides dict.
+
+    Handles ``--mouse-weight``, ``--keyboard-weight``, ``--scroll-weight``,
+    ``--app-switcher-weight``, and ``--browser-tabs-weight``.
+
+    Args:
+        args: Parsed CLI namespace.
+        overrides: Mutable dict that accumulates config overrides.
+    """
     if args.mouse_weight is not None:
         overrides.setdefault("mouse", {})["weight"] = args.mouse_weight
     if args.keyboard_weight is not None:
@@ -245,7 +344,16 @@ def _apply_cli_overrides(args: argparse.Namespace) -> dict:
     if args.browser_tabs_weight is not None:
         overrides.setdefault("browser_tabs", {})["weight"] = args.browser_tabs_weight
 
-    # ─── Stealth ─────────────────────────────────────────────────────────
+
+def _apply_stealth_overrides(args: argparse.Namespace, overrides: dict) -> None:
+    """Apply stealth-related CLI flags to the overrides dict.
+
+    Handles ``--stealth``, ``--no-stealth``, and ``--process-name``.
+
+    Args:
+        args: Parsed CLI namespace.
+        overrides: Mutable dict that accumulates config overrides.
+    """
     if args.stealth:
         overrides["stealth"] = {"rename_process": True, "hide_tray": True}
     elif args.no_stealth:
@@ -253,7 +361,16 @@ def _apply_cli_overrides(args: argparse.Namespace) -> dict:
     if args.process_name:
         overrides.setdefault("stealth", {})["process_name"] = args.process_name
 
-    # ─── Hotkeys ─────────────────────────────────────────────────────────
+
+def _apply_hotkey_overrides(args: argparse.Namespace, overrides: dict) -> None:
+    """Apply hotkey CLI flags to the overrides dict.
+
+    Handles ``--hotkey-toggle``, ``--hotkey-quit``, and ``--hotkey-hide``.
+
+    Args:
+        args: Parsed CLI namespace.
+        overrides: Mutable dict that accumulates config overrides.
+    """
     if args.hotkey_toggle:
         overrides.setdefault("hotkeys", {})["toggle"] = args.hotkey_toggle
     if args.hotkey_quit:
@@ -261,24 +378,129 @@ def _apply_cli_overrides(args: argparse.Namespace) -> dict:
     if args.hotkey_hide:
         overrides.setdefault("hotkeys", {})["hide_tray"] = args.hotkey_hide
 
+
+def _apply_cli_overrides(args: argparse.Namespace) -> dict:
+    """Build a config override dict from all CLI arguments.
+
+    Delegates to per-category helpers for simulator selection, timing,
+    tuning, weights, stealth, and hotkey flags.
+
+    Args:
+        args: Parsed CLI namespace.
+
+    Returns:
+        A dict of config overrides ready to pass to ``PhantomApp``.
+    """
+    overrides: dict = {}
+    _apply_sim_selection(args, overrides)
+    _apply_timing_overrides(args, overrides)
+    _apply_tuning_overrides(args, overrides)
+    _apply_weight_overrides(args, overrides)
+    _apply_stealth_overrides(args, overrides)
+    _apply_hotkey_overrides(args, overrides)
     return overrides
 
 
+def _resolve_mode(args: argparse.Namespace):
+    """Resolve CLI flags to an ``OutputMode`` enum value.
+
+    Checks ``--tui``, ``--tail``, and ``--ghost`` flags in order and
+    falls back to ``OutputMode.TRAY``.
+
+    Args:
+        args: Parsed CLI namespace.
+
+    Returns:
+        The ``OutputMode`` corresponding to the selected output flag.
+    """
+    from phantom.ui.modes import OutputMode
+
+    if args.tui:
+        return OutputMode.TUI
+    if args.tail:
+        return OutputMode.TAIL
+    if args.ghost:
+        return OutputMode.GHOST
+    return OutputMode.TRAY
+
+
 def main() -> None:
+    """Entry point for the ``phantom`` CLI.
+
+    Parses arguments, validates ranges, configures logging based on the
+    selected output mode, and starts the ``PhantomApp`` run loop.
+    """
     parser = _build_parser()
     args = parser.parse_args()
 
+    # Range validation
+    if args.interval is not None and args.interval < 0.01:
+        parser.error("--interval must be >= 0.01")
+    if args.idle_chance is not None and not (0.0 <= args.idle_chance <= 1.0):
+        parser.error("--idle-chance must be between 0.0 and 1.0")
+    if args.mouse_distance and args.mouse_distance[0] > args.mouse_distance[1]:
+        parser.error("--mouse-distance MIN must be <= MAX")
+    if args.scroll_clicks and args.scroll_clicks[0] > args.scroll_clicks[1]:
+        parser.error("--scroll-clicks MIN must be <= MAX")
+    weight_args = [args.mouse_weight, args.keyboard_weight, args.scroll_weight,
+                   args.app_switcher_weight, args.browser_tabs_weight]
+    for w in weight_args:
+        if w is not None and w < 0:
+            parser.error("Weight values must be >= 0")
+
     level = logging.DEBUG if args.verbose else logging.INFO
+    mode = _resolve_mode(args)
+
+    from phantom.ui.modes import OutputMode
 
     log_handler = None
-    if args.tui:
+    if mode == OutputMode.TUI:
         from phantom.ui.log_handler import DequeHandler
 
         log_handler = DequeHandler(maxlen=200)
         log_handler.setFormatter(logging.Formatter("%(asctime)s %(message)s", datefmt="%H:%M:%S"))
         handlers: list[logging.Handler] = [log_handler]
         logging.basicConfig(
-            level=level, format="%(message)s", datefmt="%H:%M:%S", handlers=handlers,
+            level=level,
+            format="%(message)s",
+            datefmt="%H:%M:%S",
+            handlers=handlers,
+        )
+    elif mode == OutputMode.TAIL:
+        from phantom.ui.tail_formatter import TailFormatter
+
+        tail_handler = logging.StreamHandler(sys.stdout)
+        tail_handler.setFormatter(TailFormatter())
+        handlers = [tail_handler]
+        logging.basicConfig(
+            level=level,
+            format="%(message)s",
+            datefmt="%H:%M:%S",
+            handlers=handlers,
+        )
+    elif mode == OutputMode.GHOST:
+        from logging.handlers import RotatingFileHandler
+        from pathlib import Path
+
+        log_dir = Path.home() / ".phantom"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        file_handler = RotatingFileHandler(
+            log_dir / "phantom.log",
+            maxBytes=5 * 1024 * 1024,
+            backupCount=3,
+        )
+        file_handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+                datefmt="%H:%M:%S",
+            ),
+        )
+        handlers = [file_handler]
+        logging.basicConfig(
+            level=level,
+            format="%(message)s",
+            datefmt="%H:%M:%S",
+            handlers=handlers,
         )
     else:
         try:
@@ -305,9 +527,13 @@ def main() -> None:
     from phantom.app import PhantomApp
 
     overrides = _apply_cli_overrides(args)
-    app = PhantomApp(config_path=args.config, cli_overrides=overrides)
+    app = PhantomApp(
+        config_path=args.config,
+        cli_overrides=overrides,
+        preset=getattr(args, "preset", None),
+    )
     try:
-        app.run(tui=args.tui, log_handler=log_handler)
+        app.run(mode=mode, log_handler=log_handler)
     except KeyboardInterrupt:
         logging.info("Interrupted")
         sys.exit(0)

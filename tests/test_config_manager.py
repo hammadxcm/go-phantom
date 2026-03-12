@@ -17,10 +17,14 @@ class TestConfigManagerResolve:
 
     def test_loads_from_file(self, tmp_path):
         cfg_file = tmp_path / "config.json"
-        cfg_file.write_text(json.dumps({
-            "mouse": {"enabled": False, "weight": 10.0},
-            "keyboard": {"max_presses": 5},
-        }))
+        cfg_file.write_text(
+            json.dumps(
+                {
+                    "mouse": {"enabled": False, "weight": 10.0},
+                    "keyboard": {"max_presses": 5},
+                }
+            )
+        )
         cm = ConfigManager(config_path=str(cfg_file))
         assert cm.config.mouse.enabled is False
         assert cm.config.mouse.weight == 10.0
@@ -37,18 +41,26 @@ class TestConfigManagerResolve:
 
     def test_handles_unknown_fields(self, tmp_path):
         cfg_file = tmp_path / "config.json"
-        cfg_file.write_text(json.dumps({
-            "mouse": {"enabled": True, "unknown_field": 999},
-        }))
+        cfg_file.write_text(
+            json.dumps(
+                {
+                    "mouse": {"enabled": True, "unknown_field": 999},
+                }
+            )
+        )
         cm = ConfigManager(config_path=str(cfg_file))
         assert cm.config.mouse.enabled is True
 
     def test_handles_non_dict_section(self, tmp_path):
         cfg_file = tmp_path / "config.json"
-        cfg_file.write_text(json.dumps({
-            "mouse": "not a dict",
-            "keyboard": {"max_presses": 7},
-        }))
+        cfg_file.write_text(
+            json.dumps(
+                {
+                    "mouse": "not a dict",
+                    "keyboard": {"max_presses": 7},
+                }
+            )
+        )
         cm = ConfigManager(config_path=str(cfg_file))
         # mouse should be default, keyboard should be parsed
         assert cm.config.mouse.enabled is True

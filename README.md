@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/phantom-v0.0.1-blueviolet?style=for-the-badge" alt="version" />
   <img src="https://img.shields.io/badge/python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="python" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="license" />
-  <img src="https://img.shields.io/badge/tests-185%2B%20passing-brightgreen?style=for-the-badge" alt="tests" />
+  <img src="https://img.shields.io/badge/tests-298%20passing-brightgreen?style=for-the-badge" alt="tests" />
   <img src="https://img.shields.io/badge/coverage-99%25-brightgreen?style=for-the-badge" alt="coverage" />
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey?style=for-the-badge" alt="platform" />
 </p>
@@ -71,7 +71,7 @@ mindmap
       Keyboard — modifier keys only, no visible output
       Scroll — vertical + horizontal
       App Switcher — Cmd+Tab / Alt+Tab
-      Browser Tabs — Ctrl+Tab
+      Browser Tabs — context-aware shortcuts
     Stealth
       Process name masking
       Tray icon hiding
@@ -96,7 +96,7 @@ mindmap
 | **Keyboard** | Presses modifier keys (Shift, Ctrl, Alt) + CapsLock double-tap — produces **no visible output** | `30` |
 | **Scroll** | Vertical scrolling (90%) or horizontal scrolling (10%), random direction and amount | `15` |
 | **App Switcher** | Simulates Cmd+Tab (macOS) or Alt+Tab (Windows/Linux) to switch 1-3 apps | `10` |
-| **Browser Tabs** | Simulates Ctrl+Tab to switch 1-4 browser tabs | `5` |
+| **Browser Tabs** | Context-aware tab switching — detects the active app and sends the correct shortcut (e.g. Cmd+Shift+] for browsers on macOS, Ctrl+Tab for VS Code). Falls back to Ctrl+Tab when detection is unavailable | `5` |
 
 ---
 
@@ -864,7 +864,9 @@ cat > ~/.phantom/config.json << 'EOF'
   },
   "browser_tabs": {
     "enabled": false,
-    "weight": 5.0
+    "weight": 5.0,
+    "context_aware": true,
+    "backward_chance": 0.3
   },
   "hotkeys": {
     "toggle": "<ctrl>+<alt>+s",
@@ -972,16 +974,31 @@ Uses <kbd>Cmd</kbd>+<kbd>Tab</kbd> on macOS, <kbd>Alt</kbd>+<kbd>Tab</kbd> on Wi
 </details>
 
 <details>
-<summary><strong><code>browser_tabs</code> — Browser tab switching</strong></summary>
+<summary><strong><code>browser_tabs</code> — Context-aware tab switching</strong></summary>
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `enabled` | `bool` | `false` | **Disabled by default** — will switch browser tabs |
 | `weight` | `float` | `5.0` | Selection probability weight |
+| `context_aware` | `bool` | `true` | Detect active window and send the correct shortcut for that app/OS |
+| `backward_chance` | `float` | `0.3` | Probability of switching to the previous tab (vs. next tab) |
 
-Uses <kbd>Ctrl</kbd>+<kbd>Tab</kbd> to cycle 1-4 tabs per action.
+When `context_aware` is enabled, Phantom detects the foreground application and sends the correct tab-switching shortcut:
 
-> ⚠️ **Warning:** Only effective when a browser is the active window. Enable alongside `app_switcher` for realistic browsing simulation.
+| App | macOS | Windows / Linux |
+|-----|-------|-----------------|
+| Browsers (Chrome, Firefox, Safari, Edge, Brave, Arc) | Cmd+Shift+] / Cmd+Shift+[ | Ctrl+Tab / Ctrl+Shift+Tab |
+| VS Code / Cursor | Ctrl+Tab / Ctrl+Shift+Tab | Ctrl+Tab / Ctrl+Shift+Tab |
+| iTerm2, Terminal.app | Cmd+Shift+] / Cmd+Shift+[ | — |
+| kitty | Ctrl+Shift+Right / Ctrl+Shift+Left | Ctrl+Shift+Right / Ctrl+Shift+Left |
+| GNOME Terminal, Konsole | — | Ctrl+PageDown / Ctrl+PageUp |
+| Unknown app (fallback) | Ctrl+Tab / Ctrl+Shift+Tab | Ctrl+Tab / Ctrl+Shift+Tab |
+
+Set `context_aware: false` to restore the original blind Ctrl+Tab behavior.
+
+> ⚠️ **Warning:** Only effective when a tabbed application is the active window. Enable alongside `app_switcher` for realistic browsing simulation.
+>
+> **Note:** Active window detection is not supported on Wayland — falls back to Ctrl+Tab.
 
 </details>
 
@@ -1144,6 +1161,7 @@ graph TB
 
     MOUSE --> RAND
     APP --> PLAT
+    TABS --> PLAT
 ```
 
 ### Module Map
@@ -1160,10 +1178,12 @@ phantom/
 │   └── schema.py            # Dataclass definitions (PhantomConfig, etc.)
 │
 ├── core/
+│   ├── active_window.py     # Cross-platform active window detection (macOS/Win/Linux)
 │   ├── platform.py          # OS detection, Wayland check, permission warnings
 │   ├── randomization.py     # Bezier curves, gaussian timing, weighted choice
 │   ├── scheduler.py         # Main loop — weighted selection, idle, anti-detection
-│   └── stats.py             # Thread-safe metrics collector for TUI dashboard
+│   ├── stats.py             # Thread-safe metrics collector for TUI dashboard
+│   └── tab_shortcuts.py     # App-to-shortcut mapping registry for tab switching
 │
 ├── hotkeys/
 │   └── manager.py           # Global hotkey registration via pynput
@@ -1174,7 +1194,7 @@ phantom/
 │   ├── keyboard.py          # Modifier-key-only presses (Shift, Ctrl, Alt, CapsLock)
 │   ├── scroll.py            # Vertical/horizontal scroll wheel
 │   ├── app_switcher.py      # Cmd+Tab (macOS) / Alt+Tab (Windows/Linux)
-│   └── browser_tabs.py      # Ctrl+Tab browser tab switching
+│   └── browser_tabs.py      # Context-aware tab switching (detects active app)
 │
 ├── stealth/
 │   ├── anti_detection.py    # History tracking, pattern blocking
@@ -1281,6 +1301,7 @@ pytest tests/test_simulators.py::test_mouse_clamp -v
 
 ```
 tests/
+├── test_active_window.py      9 tests — cross-platform window detection, cache
 ├── test_anti_detection.py    10 tests — pattern blocking, history tracking
 ├── test_app.py               10 tests — orchestrator wiring, lifecycle
 ├── test_config_manager.py    14 tests — loading, saving, resolution
@@ -1294,11 +1315,12 @@ tests/
 ├── test_process.py           11 tests — process masking per OS
 ├── test_randomization.py     25 tests — Bezier, timing, distributions
 ├── test_scheduler.py         12 tests — loop, weighted selection, idle
-├── test_simulators.py        17 tests — all 5 simulators
+├── test_simulators.py        22 tests — all 5 simulators + context-aware tabs
 ├── test_stats.py             14 tests — metrics, thread safety, snapshots
+├── test_tab_shortcuts.py     13 tests — app-to-shortcut registry lookups
 └── test_tray.py              15 tests — tray menu, status updates
                              ───
-                             185+ tests total — 99% coverage
+                             298 tests — 99% coverage
 ```
 
 ---

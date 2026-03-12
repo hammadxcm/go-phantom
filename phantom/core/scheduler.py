@@ -15,7 +15,12 @@ log = logging.getLogger(__name__)
 
 
 class Scheduler:
-    """Runs the main simulation loop in a daemon thread."""
+    """Runs the main simulation loop in a daemon thread.
+
+    Uses weighted random selection across registered simulators,
+    anti-detection guards, and gaussian-distributed intervals to
+    produce realistic activity patterns.
+    """
 
     def __init__(
         self,
@@ -24,6 +29,14 @@ class Scheduler:
         config_lock: threading.Lock,
         stats: Stats | None = None,
     ) -> None:
+        """Initialize the scheduler.
+
+        Args:
+            config: Application configuration.
+            simulators: Mapping of simulator names to instances.
+            config_lock: Lock guarding concurrent config access.
+            stats: Optional metrics collector.
+        """
         self._config = config
         self._simulators = simulators
         self._config_lock = config_lock
@@ -32,12 +45,14 @@ class Scheduler:
         self._thread: threading.Thread | None = None
         self._anti_detection = AntiDetection()
         self._stats = stats
+        self._paused_sims: set[str] = set()
 
     @property
     def is_running(self) -> bool:
         return self._running.is_set()
 
     def start(self) -> None:
+        """Start the simulation loop in a background thread."""
         if self._thread and self._thread.is_alive():
             return
         self._stop.clear()
@@ -49,6 +64,7 @@ class Scheduler:
         log.info("Scheduler started")
 
     def stop(self) -> None:
+        """Stop the simulation loop and join the thread."""
         self._running.clear()
         self._stop.set()
         if self._stats:
@@ -59,17 +75,46 @@ class Scheduler:
         log.info("Scheduler stopped")
 
     def toggle(self) -> bool:
-        """Toggle running state. Returns new state."""
+        """Toggle between running and stopped states.
+
+        Returns:
+            ``True`` if the scheduler is now running, ``False`` if stopped.
+        """
         if self._running.is_set():
             self.stop()
             return False
         self.start()
         return True
 
+    def toggle_sim_pause(self, name: str) -> bool:
+        """Toggle pause for a single simulator.
+
+        Args:
+            name: Simulator name to pause or resume.
+
+        Returns:
+            ``True`` if the simulator is now paused, ``False`` if resumed.
+        """
+        with self._config_lock:
+            if name in self._paused_sims:
+                self._paused_sims.discard(name)
+                log.info("Simulator %s resumed", name)
+                return False
+            self._paused_sims.add(name)
+            log.info("Simulator %s paused", name)
+            return True
+
+    @property
+    def paused_sims(self) -> set[str]:
+        with self._config_lock:
+            return self._paused_sims.copy()
+
     def shutdown(self) -> None:
+        """Gracefully shut down the scheduler."""
         self.stop()
 
     def _loop(self) -> None:
+        """Main loop body executed in the daemon thread."""
         log.info("Simulation loop started")
         while not self._stop.is_set():
             if not self._running.is_set():
@@ -78,6 +123,7 @@ class Scheduler:
 
             with self._config_lock:
                 weights = self._config.simulator_weights()
+                weights = {k: v for k, v in weights.items() if k not in self._paused_sims}
                 timing = self._config.timing
 
             if not weights:
@@ -128,6 +174,13 @@ class Scheduler:
         log.info("Simulation loop exited")
 
     def _get_sim_config(self, name: str):
-        """Get the config section for a named simulator."""
+        """Get the config section for a named simulator.
+
+        Args:
+            name: Simulator name matching a ``PhantomConfig`` attribute.
+
+        Returns:
+            The dataclass instance for the requested simulator section.
+        """
         with self._config_lock:
             return getattr(self._config, name)

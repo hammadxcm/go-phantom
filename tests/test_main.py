@@ -12,10 +12,11 @@ class TestMain:
     @patch("sys.argv", ["phantom"])
     def test_main_default(self, MockApp):
         from phantom.__main__ import main
+        from phantom.ui.modes import OutputMode
 
         main()
-        MockApp.assert_called_once_with(config_path=None, cli_overrides={})
-        MockApp.return_value.run.assert_called_once_with(tui=False, log_handler=None)
+        MockApp.assert_called_once_with(config_path=None, cli_overrides={}, preset=None)
+        MockApp.return_value.run.assert_called_once_with(mode=OutputMode.TRAY, log_handler=None)
 
     @patch("phantom.app.PhantomApp")
     @patch("sys.argv", ["phantom", "-c", "/tmp/cfg.json"])
@@ -23,7 +24,7 @@ class TestMain:
         from phantom.__main__ import main
 
         main()
-        MockApp.assert_called_once_with(config_path="/tmp/cfg.json", cli_overrides={})
+        MockApp.assert_called_once_with(config_path="/tmp/cfg.json", cli_overrides={}, preset=None)
 
     @patch("phantom.app.PhantomApp")
     @patch("sys.argv", ["phantom", "-v"])
@@ -48,12 +49,61 @@ class TestMain:
     @patch("sys.argv", ["phantom", "--tui"])
     def test_main_tui_flag(self, MockApp):
         from phantom.__main__ import main
+        from phantom.ui.modes import OutputMode
 
         main()
-        MockApp.assert_called_once_with(config_path=None, cli_overrides={})
+        MockApp.assert_called_once_with(config_path=None, cli_overrides={}, preset=None)
         call_args = MockApp.return_value.run.call_args
-        assert call_args.kwargs["tui"] is True
+        assert call_args.kwargs["mode"] == OutputMode.TUI
         assert call_args.kwargs["log_handler"] is not None
+
+    @patch("phantom.app.PhantomApp")
+    @patch("sys.argv", ["phantom", "--tail"])
+    def test_main_tail_flag(self, MockApp):
+        from phantom.__main__ import main
+        from phantom.ui.modes import OutputMode
+
+        main()
+        MockApp.assert_called_once_with(config_path=None, cli_overrides={}, preset=None)
+        call_args = MockApp.return_value.run.call_args
+        assert call_args.kwargs["mode"] == OutputMode.TAIL
+        assert call_args.kwargs["log_handler"] is None
+
+    @patch("phantom.app.PhantomApp")
+    @patch("sys.argv", ["phantom", "--ghost"])
+    def test_main_ghost_flag(self, MockApp):
+        from phantom.__main__ import main
+        from phantom.ui.modes import OutputMode
+
+        main()
+        MockApp.assert_called_once_with(config_path=None, cli_overrides={}, preset=None)
+        call_args = MockApp.return_value.run.call_args
+        assert call_args.kwargs["mode"] == OutputMode.GHOST
+        assert call_args.kwargs["log_handler"] is None
+
+    @patch("sys.argv", ["phantom", "--tui", "--tail"])
+    def test_main_mutually_exclusive_modes(self):
+        from phantom.__main__ import _build_parser
+
+        parser = _build_parser()
+        with pytest.raises(SystemExit):
+            parser.parse_args(["--tui", "--tail"])
+
+    @patch("sys.argv", ["phantom", "--tui", "--ghost"])
+    def test_main_mutually_exclusive_tui_ghost(self):
+        from phantom.__main__ import _build_parser
+
+        parser = _build_parser()
+        with pytest.raises(SystemExit):
+            parser.parse_args(["--tui", "--ghost"])
+
+    @patch("sys.argv", ["phantom", "--tail", "--ghost"])
+    def test_main_mutually_exclusive_tail_ghost(self):
+        from phantom.__main__ import _build_parser
+
+        parser = _build_parser()
+        with pytest.raises(SystemExit):
+            parser.parse_args(["--tail", "--ghost"])
 
     @patch("sys.argv", ["phantom"])
     @patch("phantom.app.PhantomApp")

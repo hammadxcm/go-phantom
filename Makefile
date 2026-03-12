@@ -1,4 +1,4 @@
-.PHONY: install dev lint format test build clean run setup uninstall tui release bump-patch bump-minor bump-major
+.PHONY: install dev lint format typecheck test test-cov test-verbose build clean run setup uninstall tui release bump-patch bump-minor bump-major check
 
 # ─── Quick setup (one command — works on macOS, Linux, Windows via Git Bash) ─
 setup:
@@ -9,16 +9,33 @@ install:
 	pip install -e .
 
 dev:
-	pip install -e ".[dev]" && pip install pytest pytest-cov
+	pip install -e ".[dev]"
 
 lint:
-	ruff check phantom/
+	ruff check phantom/ tests/
 
 format:
-	ruff format phantom/
+	ruff format phantom/ tests/
 
+typecheck:
+	mypy phantom/
+
+# ─── Testing ─────────────────────────────────────────────────────────────────
 test:
-	pytest --tb=short -q
+	pytest
+
+test-cov:
+	pytest --cov --cov-report=term-missing
+
+test-verbose:
+	pytest -v --tb=long
+
+# Full pre-commit check: format → lint → test with coverage gate
+check:
+	ruff format --check phantom/ tests/
+	ruff check phantom/ tests/
+	mypy phantom/
+	pytest --cov --cov-report=term-missing
 
 # ─── Run ─────────────────────────────────────────────────────────────────────
 run:
@@ -39,6 +56,7 @@ clean:
 	rm -rf dist/ build/tmp/ build/__pycache__/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -name "*.pyc" -delete 2>/dev/null || true
+	rm -rf .coverage htmlcov/
 
 uninstall:
 	rm -rf "$$HOME/.phantom" "$$HOME/.local/bin/phantom" "$$HOME/.local/bin/phantom.cmd" "$$HOME/.local/bin/phantom.ps1"

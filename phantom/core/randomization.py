@@ -34,17 +34,35 @@ class Randomizer:
 
     @staticmethod
     def bezier_point(t: float, p0: Point, p1: Point, p2: Point, p3: Point) -> Point:
-        """Evaluate a cubic Bezier curve at parameter t."""
+        """Evaluate a cubic Bezier curve at parameter *t*.
+
+        Args:
+            t: Curve parameter in ``[0, 1]``.
+            p0: Start point.
+            p1: First control point.
+            p2: Second control point.
+            p3: End point.
+
+        Returns:
+            The ``(x, y)`` point on the curve.
+        """
         u = 1.0 - t
         x = u**3 * p0[0] + 3 * u**2 * t * p1[0] + 3 * u * t**2 * p2[0] + t**3 * p3[0]
         y = u**3 * p0[1] + 3 * u**2 * t * p1[1] + 3 * u * t**2 * p2[1] + t**3 * p3[1]
         return (x, y)
 
     @staticmethod
-    def _perpendicular_offset(
-        start: Point, end: Point, fraction: float
-    ) -> Point:
-        """Generate a control point offset perpendicular to the line."""
+    def _perpendicular_offset(start: Point, end: Point, fraction: float) -> Point:
+        """Generate a control point offset perpendicular to the line.
+
+        Args:
+            start: Line start point.
+            end: Line end point.
+            fraction: Offset magnitude as a fraction of line length.
+
+        Returns:
+            The ``(px, py)`` offset vector.
+        """
         dx = end[0] - start[0]
         dy = end[1] - start[1]
         dist = math.hypot(dx, dy) or 1.0
@@ -56,7 +74,15 @@ class Randomizer:
 
     @classmethod
     def bezier_control_points(cls, start: Point, end: Point) -> tuple[Point, Point]:
-        """Generate two random control points for a cubic Bezier between start and end."""
+        """Generate two random control points for a cubic Bezier.
+
+        Args:
+            start: Curve start point.
+            end: Curve end point.
+
+        Returns:
+            A tuple of two control points ``(cp1, cp2)``.
+        """
         cp1_frac = random.uniform(cls.CONTROL_POINT_OFFSET_MIN, cls.CONTROL_POINT_OFFSET_MAX)
         cp2_frac = random.uniform(cls.CONTROL_POINT_OFFSET_MIN, cls.CONTROL_POINT_OFFSET_MAX)
 
@@ -74,12 +100,28 @@ class Randomizer:
 
     @staticmethod
     def _ease_in_out(t: float) -> float:
-        """Smooth ease-in-out curve: slow start, fast middle, slow end."""
+        """Smooth ease-in-out curve: slow start, fast middle, slow end.
+
+        Args:
+            t: Input parameter in ``[0, 1]``.
+
+        Returns:
+            Eased value in ``[0, 1]``.
+        """
         return t * t * (3.0 - 2.0 * t)
 
     @classmethod
     def bezier_path(cls, start: Point, end: Point, steps: int = 50) -> list[Point]:
-        """Generate a human-like Bezier mouse path from start to end."""
+        """Generate a human-like Bezier mouse path from *start* to *end*.
+
+        Args:
+            start: Starting cursor position.
+            end: Target cursor position.
+            steps: Number of intermediate points along the curve.
+
+        Returns:
+            List of ``(x, y)`` integer points along the path.
+        """
         cp1, cp2 = cls.bezier_control_points(start, end)
         sigma = random.uniform(cls.NOISE_SIGMA_MIN, cls.NOISE_SIGMA_MAX)
         path: list[Point] = []
@@ -102,22 +144,44 @@ class Randomizer:
         stddev: float = DEFAULT_INTERVAL_STDDEV,
         minimum: float = DEFAULT_INTERVAL_MIN,
     ) -> float:
-        """Return a gaussian-distributed action interval in seconds."""
+        """Return a gaussian-distributed action interval in seconds.
+
+        Args:
+            mean: Center of the distribution.
+            stddev: Standard deviation.
+            minimum: Hard lower bound.
+
+        Returns:
+            Interval duration in seconds.
+        """
         return max(minimum, random.gauss(mean, stddev))
 
     @classmethod
     def should_idle(cls) -> bool:
+        """Decide whether to enter an idle pause.
+
+        Returns:
+            ``True`` with probability ``IDLE_CHANCE``.
+        """
         return random.random() < cls.IDLE_CHANCE
 
     @classmethod
     def idle_duration(cls) -> float:
-        """Exponential-distributed idle duration between IDLE_MIN and IDLE_MAX."""
+        """Return an exponential-distributed idle duration.
+
+        Returns:
+            Duration in seconds, clamped to ``[IDLE_MIN, IDLE_MAX]``.
+        """
         raw = random.expovariate(1.0 / 30.0)
         return max(cls.IDLE_MIN, min(cls.IDLE_MAX, raw + cls.IDLE_MIN))
 
     @classmethod
     def keystroke_delay(cls) -> float:
-        """Human-like delay between keystrokes."""
+        """Return a human-like delay between keystrokes.
+
+        Returns:
+            Delay in seconds, occasionally extended by a thinking pause.
+        """
         base = random.uniform(cls.KEYSTROKE_BASE_MIN, cls.KEYSTROKE_BASE_MAX)
         if random.random() < cls.THINKING_PAUSE_CHANCE:
             base += random.uniform(cls.THINKING_PAUSE_MIN, cls.THINKING_PAUSE_MAX)
@@ -125,11 +189,23 @@ class Randomizer:
 
     @classmethod
     def step_delay(cls) -> float:
-        """Delay between individual mouse movement steps (8-25ms)."""
+        """Return the delay between individual mouse movement steps.
+
+        Returns:
+            Delay in seconds (8--25 ms).
+        """
         return random.uniform(0.008, 0.025)
 
     @staticmethod
     def weighted_choice(options: list[tuple[str, float]]) -> str:
-        """Weighted random selection. Returns the chosen option name."""
+        """Perform a weighted random selection.
+
+        Args:
+            options: List of ``(name, weight)`` tuples.
+
+        Returns:
+            The chosen option name.
+        """
         names, weights = zip(*options, strict=False)
-        return random.choices(list(names), weights=list(weights), k=1)[0]
+        result: str = random.choices(list(names), weights=list(weights), k=1)[0]
+        return result

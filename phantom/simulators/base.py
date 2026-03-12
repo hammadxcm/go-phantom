@@ -1,4 +1,9 @@
-"""Abstract base class for all simulators."""
+"""Abstract base class for all activity simulators.
+
+Every simulator must subclass :class:`BaseSimulator` and implement the
+:meth:`execute` method. The scheduler calls ``execute`` once per action
+cycle, passing the simulator's typed configuration dataclass.
+"""
 
 from __future__ import annotations
 
@@ -8,15 +13,28 @@ from typing import Any
 
 
 class BaseSimulator(abc.ABC):
-    """All simulators inherit from this and implement execute()."""
+    """Base class that all simulators must inherit from.
+
+    Subclasses must implement :meth:`execute` to perform one round of
+    simulated user activity. Each instance gets a dedicated logger
+    namespaced under ``phantom.simulators.<module>``.
+    """
 
     def __init__(self) -> None:
-        self.log = logging.getLogger(self.__class__.__name__)
+        """Initialize the simulator with a module-scoped logger."""
+        self.log = logging.getLogger(
+            f"phantom.simulators.{type(self).__module__.rsplit('.', 1)[-1]}"
+        )
 
     @abc.abstractmethod
     def execute(self, config: Any) -> None:
-        """Perform one round of simulated activity."""
+        """Perform one round of simulated activity.
+
+        Args:
+            config: Typed configuration dataclass for this simulator.
+        """
 
     @property
     def name(self) -> str:
+        """Return the class name of this simulator."""
         return self.__class__.__name__

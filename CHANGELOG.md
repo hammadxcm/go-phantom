@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Context-aware tab switching** — browser tabs simulator detects the active window and sends the correct shortcut for each app/OS combination (Cmd+Shift+] for browsers on macOS, Ctrl+Tab for VS Code everywhere, Ctrl+Shift+Right for kitty, etc.)
+- **Active window detection** — cross-platform utility (`phantom/core/active_window.py`) that identifies the foreground app via AppleScript (macOS), ctypes (Windows), or xdotool (Linux/X11), with 0.5s result caching
+- **Tab shortcut registry** — maps 10+ app patterns to correct tab-switching shortcuts per OS, with substring matching and fallback to Ctrl+Tab
+- **Backward tab switching** — `backward_chance` config option (default 30%) for realistic bidirectional tab navigation
+- **`context_aware` toggle** — set `context_aware: false` in browser_tabs config to restore the original blind Ctrl+Tab behavior
 - **Mouse simulator** with Bezier curve movement and micro-corrections
 - **Keyboard simulator** using modifier-key-only presses
 - **Scroll simulator** with configurable click range
@@ -32,4 +37,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Homebrew formula** for macOS installation (`brew install hammadxcm/go-phantom/phantom`)
 - **.deb packaging** via `fpm` in CI for Linux distribution
 - **PyPI metadata** — classifiers, URLs, license, and readme for `pipx install go-phantom`
-- 202 tests at 99% coverage
+- 298 tests at 99% coverage
