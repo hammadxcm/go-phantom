@@ -1,11 +1,17 @@
 name: go-phantom
 base: core22
 version: '0.0.1'
+title: Phantom
 summary: Cross-platform activity simulator
 description: |
   Phantom keeps your computer looking busy with realistic mouse movements,
   keyboard activity, scrolling, app switching, and browser tab cycling.
   Stealth mode, system tray, TUI dashboard, global hotkeys, fully configurable.
+license: MIT
+contact: https://github.com/hammadxcm/go-phantom/issues
+issues: https://github.com/hammadxcm/go-phantom/issues
+source-code: https://github.com/hammadxcm/go-phantom
+website: https://github.com/hammadxcm/go-phantom
 
 grade: stable
 confinement: strict
@@ -31,3 +37,6 @@ parts:
       phantom-linux-x86_64: bin/phantom
     stage:
       - bin/phantom
+    override-prime: |
+      snapcraftctl prime
+      chmod +x bin/phantom
