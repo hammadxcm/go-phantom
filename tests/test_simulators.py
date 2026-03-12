@@ -291,18 +291,14 @@ class TestBrowserTabsSimulator:
     @patch("phantom.simulators.browser_tabs.Controller")
     @patch("phantom.simulators.browser_tabs.current_os")
     @patch("phantom.simulators.browser_tabs.get_active_window")
-    def test_context_aware_chrome_macos(
-        self, mock_window, mock_os, MockController, mock_sleep
-    ):
+    def test_context_aware_chrome_macos(self, mock_window, mock_os, MockController, mock_sleep):
         from pynput.keyboard import Key, KeyCode
 
         from phantom.core.active_window import WindowInfo
         from phantom.core.platform import OS
 
         mock_os.return_value = OS.MACOS
-        mock_window.return_value = WindowInfo(
-            app_name="Google Chrome", window_title="GitHub"
-        )
+        mock_window.return_value = WindowInfo(app_name="Google Chrome", window_title="GitHub")
         mock_ctrl = MockController.return_value
         sim = BrowserTabsSimulator()
         sim._controller = mock_ctrl
@@ -320,9 +316,7 @@ class TestBrowserTabsSimulator:
     @patch("phantom.simulators.browser_tabs.time.sleep")
     @patch("phantom.simulators.browser_tabs.Controller")
     @patch("phantom.simulators.browser_tabs.get_active_window", return_value=None)
-    def test_fallback_on_detection_failure(
-        self, mock_window, MockController, mock_sleep
-    ):
+    def test_fallback_on_detection_failure(self, mock_window, MockController, mock_sleep):
         from pynput.keyboard import Key
 
         mock_ctrl = MockController.return_value
@@ -360,18 +354,14 @@ class TestBrowserTabsSimulator:
     @patch("phantom.simulators.browser_tabs.Controller")
     @patch("phantom.simulators.browser_tabs.current_os")
     @patch("phantom.simulators.browser_tabs.get_active_window")
-    def test_backward_direction(
-        self, mock_window, mock_os, MockController, mock_sleep
-    ):
+    def test_backward_direction(self, mock_window, mock_os, MockController, mock_sleep):
         from pynput.keyboard import Key
 
         from phantom.core.active_window import WindowInfo
         from phantom.core.platform import OS
 
         mock_os.return_value = OS.WINDOWS
-        mock_window.return_value = WindowInfo(
-            app_name="Google Chrome", window_title="Tab"
-        )
+        mock_window.return_value = WindowInfo(app_name="Google Chrome", window_title="Tab")
         mock_ctrl = MockController.return_value
         sim = BrowserTabsSimulator()
         sim._controller = mock_ctrl

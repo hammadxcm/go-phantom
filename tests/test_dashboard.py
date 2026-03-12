@@ -249,9 +249,7 @@ class TestThemes:
     def test_all_themes_have_sim_colors(self):
         sims = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
         for name, theme in THEMES.items():
-            assert sims <= set(theme["sim_colors"].keys()), (
-                f"Theme {name!r} missing sim colors"
-            )
+            assert sims <= set(theme["sim_colors"].keys()), f"Theme {name!r} missing sim colors"
 
 
 class TestBackwardCompat:

@@ -260,6 +260,7 @@ def _apply_sim_selection(args: argparse.Namespace, overrides: dict) -> None:
         unknown = user_set - ALL_SIMULATORS_SET
         if unknown:
             import sys
+
             names = ", ".join(sorted(unknown))
             print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
         overrides["_only"] = user_set & ALL_SIMULATORS_SET
@@ -271,6 +272,7 @@ def _apply_sim_selection(args: argparse.Namespace, overrides: dict) -> None:
         unknown = user_set - ALL_SIMULATORS_SET
         if unknown:
             import sys
+
             names = ", ".join(sorted(unknown))
             print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
         overrides["_enable"] = user_set & ALL_SIMULATORS_SET
@@ -279,6 +281,7 @@ def _apply_sim_selection(args: argparse.Namespace, overrides: dict) -> None:
         unknown = user_set - ALL_SIMULATORS_SET
         if unknown:
             import sys
+
             names = ", ".join(sorted(unknown))
             print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
         overrides["_disable"] = user_set & ALL_SIMULATORS_SET
@@ -442,8 +445,13 @@ def main() -> None:
         parser.error("--mouse-distance MIN must be <= MAX")
     if args.scroll_clicks and args.scroll_clicks[0] > args.scroll_clicks[1]:
         parser.error("--scroll-clicks MIN must be <= MAX")
-    weight_args = [args.mouse_weight, args.keyboard_weight, args.scroll_weight,
-                   args.app_switcher_weight, args.browser_tabs_weight]
+    weight_args = [
+        args.mouse_weight,
+        args.keyboard_weight,
+        args.scroll_weight,
+        args.app_switcher_weight,
+        args.browser_tabs_weight,
+    ]
     for w in weight_args:
         if w is not None and w < 0:
             parser.error("Weight values must be >= 0")

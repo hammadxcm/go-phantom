@@ -162,8 +162,14 @@ class SettingsScreen(ModalScreen):
     }
     """
 
-    def __init__(self, config: PhantomConfig, theme: dict, paused_sims: set,
-                 preset_name: str | None, theme_name: str) -> None:
+    def __init__(
+        self,
+        config: PhantomConfig,
+        theme: dict,
+        paused_sims: set,
+        preset_name: str | None,
+        theme_name: str,
+    ) -> None:
         super().__init__()
         self._config = config
         self._theme = theme
@@ -307,9 +313,7 @@ class PhantomDashboard(App):
         self._on_sim_pause = on_sim_pause
         self._config_lock = config_lock or threading.Lock()
         self._preset_name = preset_name
-        self._preset_index = (
-            PRESET_NAMES.index(preset_name) if preset_name in PRESET_NAMES else -1
-        )
+        self._preset_index = PRESET_NAMES.index(preset_name) if preset_name in PRESET_NAMES else -1
         self._flash_msg: str | None = None
         self._flash_until: float = 0
         self._selected_sim: int | None = None
@@ -437,8 +441,12 @@ class PhantomDashboard(App):
         last = snap["last_action_name"]
         if last:
             table.add_row(
-                "", "", "", Text("Last", style="dim"),
-                "", Text(last.replace("_", " ").title(), style="dim"),
+                "",
+                "",
+                "",
+                Text("Last", style="dim"),
+                "",
+                Text(last.replace("_", " ").title(), style="dim"),
             )
 
         return table
@@ -602,8 +610,11 @@ class PhantomDashboard(App):
     def action_toggle_settings(self) -> None:
         self.push_screen(
             SettingsScreen(
-                self._config, self._theme, self._paused_sims,
-                self._preset_name, self._theme_name,
+                self._config,
+                self._theme,
+                self._paused_sims,
+                self._preset_name,
+                self._theme_name,
             )
         )
 

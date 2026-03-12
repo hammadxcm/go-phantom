@@ -87,7 +87,7 @@ def _detect_macos() -> WindowInfo | None:
         'tell application "System Events"\n'
         "  set frontApp to first application process whose frontmost is true\n"
         "  set appName to name of frontApp\n"
-        "  set winTitle to \"\"\n"
+        '  set winTitle to ""\n'
         "  try\n"
         "    set winTitle to name of front window of frontApp\n"
         "  end try\n"
@@ -135,9 +135,7 @@ def _detect_windows() -> WindowInfo | None:
     kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
     PROCESS_QUERY_INFORMATION = 0x0400
     PROCESS_VM_READ = 0x0010
-    handle = kernel32.OpenProcess(
-        PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, False, pid.value
-    )
+    handle = kernel32.OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, False, pid.value)
     if not handle:
         return WindowInfo(app_name="", window_title=title)
 

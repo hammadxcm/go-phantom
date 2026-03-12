@@ -43,9 +43,7 @@ class BrowserTabsSimulator(BaseSimulator):
             keys = shortcut.backward if backward else shortcut.forward
             direction = "backward" if backward else "forward"
             self._press_shortcut(keys, tabs)
-            self.log.debug(
-                "Browser tab switch: %d tabs (%s, %s)", tabs, app_name, direction
-            )
+            self.log.debug("Browser tab switch: %d tabs (%s, %s)", tabs, app_name, direction)
         else:
             # Fallback: blind Ctrl+Tab
             for _ in range(tabs):

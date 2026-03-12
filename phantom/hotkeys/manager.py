@@ -53,11 +53,13 @@ class HotkeyManager:
 
         def _safe(fn: Callable[[], None]) -> Callable[[], None]:
             """Wrap a callback so exceptions don't crash the hotkey listener."""
+
             def wrapper() -> None:
                 try:
                     fn()
                 except Exception:
                     log.exception("Hotkey callback failed")
+
             return wrapper
 
         hotkey_map: dict[str, Callable] = {
