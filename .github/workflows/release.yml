@@ -177,9 +177,14 @@ jobs:
           choco push (Get-ChildItem *.nupkg).Name --source https://push.chocolatey.org/ --api-key ${{ secrets.CHOCO_API_KEY }}
 
   # ─── WinGet (Windows) ───────────────────────────────────────────────────────
+  # NOTE: winget-releaser requires the package to already exist in the
+  # winget-pkgs repository.  For the initial submission, open a PR manually
+  # at https://github.com/microsoft/winget-pkgs.  Subsequent releases will
+  # be auto-updated by this job.
   publish-winget:
     needs: [release]
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       - name: Publish to WinGet

@@ -15,7 +15,7 @@ architectures:
 
 apps:
   phantom:
-    command: phantom
+    command: bin/phantom
     plugs:
       - x11
       - desktop
@@ -28,6 +28,6 @@ parts:
     plugin: dump
     source: .
     organize:
-      phantom-linux-x86_64: phantom
+      phantom-linux-x86_64: bin/phantom
     stage:
-      - phantom
+      - bin/phantom
