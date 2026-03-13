@@ -1,0 +1,259 @@
+---
+const version = "0.0.1";
+const releaseBase = `https://github.com/hammadxcm/go-phantom/releases/download/v${version}`;
+
+const platforms = {
+  macos: {
+    label: "macOS",
+    icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>`,
+    binaries: [
+      {
+        name: "phantom-macos-arm64",
+        note: "Apple Silicon (M1/M2/M3/M4)",
+        url: `${releaseBase}/phantom-macos-arm64`,
+        sha256: "Download and verify with shasum -a 256",
+      },
+    ],
+    commands: [
+      { manager: "Homebrew", cmd: "brew install hammadxcm/tap/phantom" },
+      { manager: "pip", cmd: "pip install go-phantom" },
+    ],
+    note: {
+      title: "macOS Gatekeeper",
+      text: 'The binary is not code-signed. After downloading, remove the quarantine attribute before running:',
+      cmd: "xattr -d com.apple.quarantine phantom-macos-arm64",
+    },
+  },
+  linux: {
+    label: "Linux",
+    icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.368 1.884 1.43.868.065 1.7-.278 2.274-.866.547-.534 1.07-.874 2.198-1.07.413-.082.633-.377.748-.68.115-.304.135-.664-.12-1.025-.255-.362-.445-.534-.398-.875.134-.478-.218-.79-.346-.86-.128-.07-.213-.085-.34-.131-.108-.04-.186-.095-.208-.149-.04-.09-.06-.14-.112-.174-.053-.034-.084-.131-.096-.209-.012-.067-.048-.132-.095-.202-.028-.05-.147-.114-.159-.173-.012-.055-.002-.105.018-.136.022-.035.032-.068.028-.097-.008-.07-.095-.29-.261-.458-.19-.192-.383-.396-.54-.584-.057-.08-.121-.173-.174-.308-.065-.167-.02-.334.06-.425.06-.07.148-.048.17-.118.027-.087-.092-.211-.118-.29-.026-.08-.13-.228-.32-.31-.188-.08-.378-.193-.392-.418-.018-.263-.034-.495.055-.688.088-.19.236-.34.408-.375.172-.035.302.04.383.147.081.106.137.237.21.345.073.107.15.205.38.219a.525.525 0 00.195-.027c.021.008.043.008.065.008.21 0 .415-.095.592-.21.178-.117.312-.283.425-.47-.074-.108-.033-.204.075-.198.138.01.344.168.3-.098-.003-.026-.008-.058-.008-.087-.07-.017-.13-.05-.167-.118-.045-.08-.03-.19.003-.308.028-.108.064-.207.067-.32.003-.11-.013-.264-.064-.37-.078-.133-.303-.182-.586-.19-.282-.008-.596.032-.844.046a1.1 1.1 0 01-.12.009h-.026a.584.584 0 01-.13-.032c-.088-.04-.153-.11-.143-.24.013-.155.071-.27.174-.347.103-.077.204-.12.28-.09.07.027.135.087.233.1a.357.357 0 00.222-.049c.136-.108.047-.25-.023-.338-.043-.057-.117-.09-.21-.133-.09-.042-.2-.091-.25-.215-.032-.078-.105-.305-.165-.468-.059-.163-.109-.302-.096-.361.01-.043.005-.087.006-.136a.75.75 0 00-.001-.076c-.07-.36-.296-.671-.491-.975a4.446 4.446 0 01-.222-.365c-.034-.064-.033-.149-.049-.235a.89.89 0 00-.071-.24c-.124-.235-.269-.395-.335-.553-.066-.155-.046-.29.039-.475.032-.064.08-.133.143-.218.064-.087.127-.21.141-.361.014-.15-.022-.348-.142-.553-.117-.198-.224-.276-.413-.367-.19-.089-.39-.14-.591-.169-.25-.034-.5.037-.627.048-.127.012-.13.024-.2.02-.07.01-.156-.01-.27-.076C6.574 1.54 6.12.83 5.636.527 5.15.223 4.627.04 4.184.003 3.74-.033 3.38.07 3.12.235 2.86.4 2.7.6 2.58.741a1.2 1.2 0 00-.166.271c-.04.09-.04.19-.04.296 0 .244.043.473.087.64.044.167.084.26.074.39-.009.145-.08.283-.148.457-.069.174-.165.392-.187.716-.02.327.025.773.186 1.1.09.198.218.296.274.408.057.112.094.19.097.319a.634.634 0 01-.1.341c-.064.091-.141.158-.214.235-.073.076-.155.166-.17.3-.012.103-.005.222.024.348-1.11 1.004-2.024 2.168-2.024 4.129 0 1.334.307 2.33.624 3.2.317.87.644 1.61.94 2.592l.002.006c.213.7.547 1.15.985 1.5.438.352.935.584 1.412.741.953.314 1.85.356 2.39.356l.19-.001h.015c.042.045.088.09.137.133z"/></svg>`,
+    binaries: [
+      {
+        name: "phantom-linux-x86_64",
+        note: "x86_64",
+        url: `${releaseBase}/phantom-linux-x86_64`,
+        sha256: "Download and verify with sha256sum",
+      },
+      {
+        name: "phantom_0.0.1_amd64.deb",
+        note: "Debian/Ubuntu",
+        url: `${releaseBase}/phantom_0.0.1_amd64.deb`,
+        sha256: "Download and verify with sha256sum",
+      },
+    ],
+    commands: [
+      { manager: "Snap Store", cmd: "sudo snap install go-phantom" },
+      { manager: "pip", cmd: "pip install go-phantom" },
+      { manager: "Debian (.deb)", cmd: `wget ${releaseBase}/phantom_0.0.1_amd64.deb && sudo dpkg -i phantom_0.0.1_amd64.deb` },
+    ],
+  },
+  windows: {
+    label: "Windows",
+    icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>`,
+    binaries: [
+      {
+        name: "phantom-windows.exe",
+        note: "x86_64",
+        url: `${releaseBase}/phantom-windows.exe`,
+        sha256: "BB66E8387984ACA56E7DDB3311F6B961FEBDB184A062289B4754E911711DF874",
+      },
+    ],
+    commands: [
+      { manager: "Chocolatey", cmd: "choco install go-phantom" },
+      { manager: "Scoop", cmd: "scoop bucket add phantom https://github.com/hammadxcm/scoop-phantom && scoop install go-phantom" },
+      { manager: "WinGet", cmd: "winget install hammadxcm.go-phantom" },
+      { manager: "pip", cmd: "pip install go-phantom" },
+    ],
+  },
+};
+---
+
+<section id="downloads" class="px-4 py-20 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl">
+    <div class="mb-12 text-center animate-on-scroll">
+      <h2 class="mb-4 text-3xl font-bold sm:text-4xl">
+        <span class="gradient-text">Download</span> Phantom
+      </h2>
+      <p class="text-[var(--color-text-muted)]">
+        Choose your platform and preferred installation method.
+      </p>
+    </div>
+
+    <div class="animate-on-scroll">
+      <!-- OS Tabs -->
+      <div class="mb-6 flex justify-center gap-2" id="os-tabs" role="tablist">
+        {Object.entries(platforms).map(([key, platform]) => (
+          <button
+            role="tab"
+            aria-selected="false"
+            aria-controls={`panel-${key}`}
+            data-os={key}
+            class="os-tab flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2.5 text-sm font-medium text-[var(--color-text-muted)] transition-all hover:border-[var(--color-cyan)]/50 hover:text-[var(--color-text)] [&[aria-selected=true]]:border-[var(--color-cyan)] [&[aria-selected=true]]:text-[var(--color-cyan)] [&[aria-selected=true]]:shadow-[0_0_12px_rgba(6,182,212,0.15)]"
+          >
+            <Fragment set:html={platform.icon} />
+            {platform.label}
+          </button>
+        ))}
+      </div>
+
+      <!-- Tab Panels -->
+      {Object.entries(platforms).map(([key, platform]) => (
+        <div
+          id={`panel-${key}`}
+          role="tabpanel"
+          class="os-panel hidden"
+          data-os={key}
+        >
+          <div class="gradient-border rounded-xl p-6 space-y-6">
+            <!-- Binary Downloads -->
+            <div>
+              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+                Direct Download
+              </h3>
+              {platform.binaries.map((binary) => (
+                <div class="mb-3 rounded-lg bg-[var(--color-bg)] p-4">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <a
+                        href={binary.url}
+                        class="font-mono text-sm text-[var(--color-cyan)] hover:underline"
+                      >
+                        {binary.name}
+                      </a>
+                      <span class="ml-2 text-xs text-[var(--color-text-muted)]">
+                        ({binary.note})
+                      </span>
+                    </div>
+                    <a
+                      href={binary.url}
+                      class="inline-flex items-center gap-1.5 rounded-md bg-[var(--color-cyan)]/10 px-3 py-1.5 text-xs font-medium text-[var(--color-cyan)] hover:bg-[var(--color-cyan)]/20 transition-colors"
+                    >
+                      <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Download
+                    </a>
+                  </div>
+                  <div class="mt-2 flex items-center gap-2">
+                    <span class="text-xs text-[var(--color-text-muted)]">SHA256:</span>
+                    <code class="text-xs text-[var(--color-text-muted)] font-mono break-all">
+                      {binary.sha256}
+                    </code>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <!-- Package Manager Commands -->
+            <div>
+              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+                Package Managers
+              </h3>
+              <div class="space-y-2">
+                {platform.commands.map((cmd) => (
+                  <div class="group flex items-center justify-between rounded-lg bg-[var(--color-bg)] p-3">
+                    <div class="flex-1 min-w-0">
+                      <span class="mr-2 text-xs font-medium text-[var(--color-purple)]">
+                        {cmd.manager}
+                      </span>
+                      <code class="block mt-1 text-sm font-mono text-[var(--color-text)] break-all">
+                        {cmd.cmd}
+                      </code>
+                    </div>
+                    <button
+                      class="copy-btn ml-3 shrink-0 rounded-md p-1.5 text-[var(--color-text-muted)] opacity-0 transition-all hover:bg-[var(--color-border)] hover:text-[var(--color-text)] group-hover:opacity-100"
+                      data-copy={cmd.cmd}
+                      title="Copy to clipboard"
+                    >
+                      <svg class="copy-icon h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <svg class="check-icon hidden h-4 w-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Platform-specific notes */}
+            {"note" in platform && platform.note && (
+              <div class="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+                <div class="flex items-start gap-3">
+                  <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div>
+                    <p class="text-sm font-medium text-amber-400">{platform.note.title}</p>
+                    <p class="mt-1 text-xs text-[var(--color-text-muted)]">{platform.note.text}</p>
+                    <div class="group relative mt-2">
+                      <pre class="overflow-x-auto rounded-md bg-[var(--color-bg)] p-2 text-xs"><code class="font-mono text-[var(--color-cyan)]">{platform.note.cmd}</code></pre>
+                      <button
+                        class="copy-btn absolute right-1.5 top-1.5 rounded-md p-1 text-[var(--color-text-muted)] opacity-0 transition-all hover:bg-[var(--color-border)] hover:text-[var(--color-text)] group-hover:opacity-100"
+                        data-copy={platform.note.cmd}
+                        title="Copy to clipboard"
+                      >
+                        <svg class="copy-icon h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <svg class="check-icon hidden h-3.5 w-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  // OS detection and tab switching
+  function detectOS(): string {
+    const ua = navigator.userAgent.toLowerCase();
+    const platform = (navigator as any).userAgentData?.platform?.toLowerCase() ?? navigator.platform?.toLowerCase() ?? "";
+    if (platform.includes("mac") || ua.includes("mac")) return "macos";
+    if (platform.includes("win") || ua.includes("win")) return "windows";
+    return "linux";
+  }
+
+  function switchTab(os: string) {
+    document.querySelectorAll(".os-tab").forEach((tab) => {
+      tab.setAttribute("aria-selected", String((tab as HTMLElement).dataset.os === os));
+    });
+    document.querySelectorAll(".os-panel").forEach((panel) => {
+      panel.classList.toggle("hidden", (panel as HTMLElement).dataset.os !== os);
+    });
+  }
+
+  // Init tabs
+  document.querySelectorAll(".os-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      switchTab((tab as HTMLElement).dataset.os!);
+    });
+  });
+
+  switchTab(detectOS());
+
+  // Copy to clipboard
+  document.querySelectorAll(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const text = (btn as HTMLElement).dataset.copy!;
+      await navigator.clipboard.writeText(text);
+      const copyIcon = btn.querySelector(".copy-icon")!;
+      const checkIcon = btn.querySelector(".check-icon")!;
+      copyIcon.classList.add("hidden");
+      checkIcon.classList.remove("hidden");
+      setTimeout(() => {
+        copyIcon.classList.remove("hidden");
+        checkIcon.classList.add("hidden");
+      }, 2000);
+    });
+  });
+</script>
