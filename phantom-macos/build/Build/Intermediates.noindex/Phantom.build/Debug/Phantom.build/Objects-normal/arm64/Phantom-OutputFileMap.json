@@ -1,0 +1,229 @@
+{
+  "" : {
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Phantom-primary.dia",
+    "emit-module-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Phantom-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Phantom-primary-emit-module.dia",
+    "pch" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Phantom-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Phantom-primary.swiftdeps"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/AppState.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppState.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppState.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppState.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppState.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppState.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppState.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppState.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppState~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Config/ConfigManager.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ConfigManager.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ConfigManager.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ConfigManager.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ConfigManager.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ConfigManager.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ConfigManager.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ConfigManager.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ConfigManager~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Config/PhantomConfig.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomConfig.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomConfig.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomConfig.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomConfig.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomConfig.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomConfig.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomConfig.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomConfig~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Config/Presets.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Presets.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Presets.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Presets.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Presets.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Presets.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Presets.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Presets.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Presets~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Core/ActiveWindow.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ActiveWindow.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ActiveWindow.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ActiveWindow.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ActiveWindow.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ActiveWindow.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ActiveWindow.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ActiveWindow.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ActiveWindow~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Core/AntiDetection.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AntiDetection.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AntiDetection.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AntiDetection.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AntiDetection.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AntiDetection.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AntiDetection.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AntiDetection.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AntiDetection~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Core/Randomizer.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Randomizer.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Randomizer.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Randomizer.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Randomizer.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Randomizer.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Randomizer.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Randomizer.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Randomizer~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Core/Scheduler.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Scheduler.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Scheduler.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Scheduler.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Scheduler.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Scheduler.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Scheduler.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Scheduler.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/Scheduler~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Core/TabShortcuts.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/TabShortcuts.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/TabShortcuts.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/TabShortcuts.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/TabShortcuts.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/TabShortcuts.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/TabShortcuts.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/TabShortcuts.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/TabShortcuts~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Hotkeys/HotkeyManager.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/HotkeyManager.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/HotkeyManager.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/HotkeyManager.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/HotkeyManager.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/HotkeyManager.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/HotkeyManager.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/HotkeyManager.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/HotkeyManager~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/PhantomApp.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomApp.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomApp.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomApp.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomApp.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomApp.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomApp.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomApp.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/PhantomApp~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Simulators/AppSwitcherSimulator.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppSwitcherSimulator.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppSwitcherSimulator.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppSwitcherSimulator.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppSwitcherSimulator.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppSwitcherSimulator.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppSwitcherSimulator.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppSwitcherSimulator.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AppSwitcherSimulator~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Simulators/BrowserTabsSimulator.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/BrowserTabsSimulator.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/BrowserTabsSimulator.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/BrowserTabsSimulator.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/BrowserTabsSimulator.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/BrowserTabsSimulator.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/BrowserTabsSimulator.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/BrowserTabsSimulator.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/BrowserTabsSimulator~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Simulators/KeyboardSimulator.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/KeyboardSimulator.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/KeyboardSimulator.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/KeyboardSimulator.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/KeyboardSimulator.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/KeyboardSimulator.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/KeyboardSimulator.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/KeyboardSimulator.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/KeyboardSimulator~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Simulators/MouseSimulator.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/MouseSimulator.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/MouseSimulator.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/MouseSimulator.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/MouseSimulator.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/MouseSimulator.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/MouseSimulator.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/MouseSimulator.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/MouseSimulator~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Simulators/ScrollSimulator.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ScrollSimulator.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ScrollSimulator.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ScrollSimulator.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ScrollSimulator.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ScrollSimulator.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ScrollSimulator.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ScrollSimulator.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ScrollSimulator~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Simulators/SimulatorProtocol.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SimulatorProtocol.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SimulatorProtocol.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SimulatorProtocol.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SimulatorProtocol.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SimulatorProtocol.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SimulatorProtocol.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SimulatorProtocol.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SimulatorProtocol~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/Stealth/ProcessMasking.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ProcessMasking.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ProcessMasking.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ProcessMasking.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ProcessMasking.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ProcessMasking.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ProcessMasking.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ProcessMasking.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/ProcessMasking~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/UI/AccessibilityPrompt.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AccessibilityPrompt.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AccessibilityPrompt.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AccessibilityPrompt.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AccessibilityPrompt.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AccessibilityPrompt.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AccessibilityPrompt.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AccessibilityPrompt.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/AccessibilityPrompt~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/UI/SettingsView.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SettingsView.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SettingsView.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SettingsView.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SettingsView.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SettingsView.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/SettingsView~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/UI/StatusBarController.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/StatusBarController.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/StatusBarController.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/StatusBarController.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/StatusBarController.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/StatusBarController.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/StatusBarController.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/StatusBarController.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/StatusBarController~partial.swiftmodule"
+  },
+  "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Debug/Phantom.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

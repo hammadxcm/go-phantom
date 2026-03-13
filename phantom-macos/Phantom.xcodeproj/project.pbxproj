@@ -1,0 +1,451 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000001 /* PhantomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000001; };
+		A10000002 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000002; };
+		A10000003 /* PhantomConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000003; };
+		A10000004 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000004; };
+		A10000005 /* Presets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000005; };
+		A10000006 /* SimulatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000006; };
+		A10000007 /* MouseSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000007; };
+		A10000008 /* KeyboardSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000008; };
+		A10000009 /* ScrollSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000009; };
+		A10000010 /* AppSwitcherSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000010; };
+		A10000011 /* BrowserTabsSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000011; };
+		A10000012 /* Scheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000012; };
+		A10000013 /* Randomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000013; };
+		A10000014 /* AntiDetection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000014; };
+		A10000015 /* ActiveWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000015; };
+		A10000016 /* TabShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000016; };
+		A10000017 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000017; };
+		A10000018 /* ProcessMasking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000018; };
+		A10000019 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000019; };
+		A10000020 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000020; };
+		A10000021 /* AccessibilityPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000021; };
+		A10000022 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000022; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B10000001 /* PhantomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhantomApp.swift; sourceTree = "<group>"; };
+		B10000002 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		B10000003 /* PhantomConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhantomConfig.swift; sourceTree = "<group>"; };
+		B10000004 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
+		B10000005 /* Presets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Presets.swift; sourceTree = "<group>"; };
+		B10000006 /* SimulatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorProtocol.swift; sourceTree = "<group>"; };
+		B10000007 /* MouseSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseSimulator.swift; sourceTree = "<group>"; };
+		B10000008 /* KeyboardSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSimulator.swift; sourceTree = "<group>"; };
+		B10000009 /* ScrollSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollSimulator.swift; sourceTree = "<group>"; };
+		B10000010 /* AppSwitcherSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSwitcherSimulator.swift; sourceTree = "<group>"; };
+		B10000011 /* BrowserTabsSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserTabsSimulator.swift; sourceTree = "<group>"; };
+		B10000012 /* Scheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scheduler.swift; sourceTree = "<group>"; };
+		B10000013 /* Randomizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomizer.swift; sourceTree = "<group>"; };
+		B10000014 /* AntiDetection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AntiDetection.swift; sourceTree = "<group>"; };
+		B10000015 /* ActiveWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveWindow.swift; sourceTree = "<group>"; };
+		B10000016 /* TabShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabShortcuts.swift; sourceTree = "<group>"; };
+		B10000017 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+		B10000018 /* ProcessMasking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessMasking.swift; sourceTree = "<group>"; };
+		B10000019 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
+		B10000020 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10000021 /* AccessibilityPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPrompt.swift; sourceTree = "<group>"; };
+		B10000022 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10000023 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10000024 /* Phantom.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Phantom.entitlements; sourceTree = "<group>"; };
+		B10000099 /* Phantom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Phantom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C10000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D10000001 /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				D10000002 /* Phantom */,
+				D10000099 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D10000002 /* Phantom */ = {
+			isa = PBXGroup;
+			children = (
+				B10000001 /* PhantomApp.swift */,
+				B10000002 /* AppState.swift */,
+				B10000023 /* Info.plist */,
+				B10000024 /* Phantom.entitlements */,
+				D10000003 /* Config */,
+				D10000004 /* Simulators */,
+				D10000005 /* Core */,
+				D10000006 /* Hotkeys */,
+				D10000007 /* Stealth */,
+				D10000008 /* UI */,
+				D10000009 /* Resources */,
+			);
+			path = Phantom;
+			sourceTree = "<group>";
+		};
+		D10000003 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B10000003 /* PhantomConfig.swift */,
+				B10000004 /* ConfigManager.swift */,
+				B10000005 /* Presets.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		D10000004 /* Simulators */ = {
+			isa = PBXGroup;
+			children = (
+				B10000006 /* SimulatorProtocol.swift */,
+				B10000007 /* MouseSimulator.swift */,
+				B10000008 /* KeyboardSimulator.swift */,
+				B10000009 /* ScrollSimulator.swift */,
+				B10000010 /* AppSwitcherSimulator.swift */,
+				B10000011 /* BrowserTabsSimulator.swift */,
+			);
+			path = Simulators;
+			sourceTree = "<group>";
+		};
+		D10000005 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				B10000012 /* Scheduler.swift */,
+				B10000013 /* Randomizer.swift */,
+				B10000014 /* AntiDetection.swift */,
+				B10000015 /* ActiveWindow.swift */,
+				B10000016 /* TabShortcuts.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		D10000006 /* Hotkeys */ = {
+			isa = PBXGroup;
+			children = (
+				B10000017 /* HotkeyManager.swift */,
+			);
+			path = Hotkeys;
+			sourceTree = "<group>";
+		};
+		D10000007 /* Stealth */ = {
+			isa = PBXGroup;
+			children = (
+				B10000018 /* ProcessMasking.swift */,
+			);
+			path = Stealth;
+			sourceTree = "<group>";
+		};
+		D10000008 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				B10000019 /* StatusBarController.swift */,
+				B10000020 /* SettingsView.swift */,
+				B10000021 /* AccessibilityPrompt.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		D10000009 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B10000022 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D10000099 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B10000099 /* Phantom.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E10000001 /* Phantom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F10000003 /* Build configuration list for PBXNativeTarget "Phantom" */;
+			buildPhases = (
+				C10000002 /* Sources */,
+				C10000001 /* Frameworks */,
+				C10000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Phantom;
+			productName = Phantom;
+			productReference = B10000099 /* Phantom.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E10000099 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					E10000001 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = F10000001 /* Build configuration list for PBXProject "Phantom" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D10000001;
+			productRefGroup = D10000099 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E10000001 /* Phantom */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C10000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000022 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C10000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000001 /* PhantomApp.swift in Sources */,
+				A10000002 /* AppState.swift in Sources */,
+				A10000003 /* PhantomConfig.swift in Sources */,
+				A10000004 /* ConfigManager.swift in Sources */,
+				A10000005 /* Presets.swift in Sources */,
+				A10000006 /* SimulatorProtocol.swift in Sources */,
+				A10000007 /* MouseSimulator.swift in Sources */,
+				A10000008 /* KeyboardSimulator.swift in Sources */,
+				A10000009 /* ScrollSimulator.swift in Sources */,
+				A10000010 /* AppSwitcherSimulator.swift in Sources */,
+				A10000011 /* BrowserTabsSimulator.swift in Sources */,
+				A10000012 /* Scheduler.swift in Sources */,
+				A10000013 /* Randomizer.swift in Sources */,
+				A10000014 /* AntiDetection.swift in Sources */,
+				A10000015 /* ActiveWindow.swift in Sources */,
+				A10000016 /* TabShortcuts.swift in Sources */,
+				A10000017 /* HotkeyManager.swift in Sources */,
+				A10000018 /* ProcessMasking.swift in Sources */,
+				A10000019 /* StatusBarController.swift in Sources */,
+				A10000020 /* SettingsView.swift in Sources */,
+				A10000021 /* AccessibilityPrompt.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F10000011 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F10000012 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F10000021 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Phantom/Phantom.entitlements;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Phantom/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.phantom.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F10000022 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Phantom/Phantom.entitlements;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Phantom/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.phantom.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F10000001 /* Build configuration list for PBXProject "Phantom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F10000011 /* Debug */,
+				F10000012 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F10000003 /* Build configuration list for PBXNativeTarget "Phantom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F10000021 /* Debug */,
+				F10000022 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = E10000099 /* Project object */;
+}

@@ -1,0 +1,64 @@
+{
+  "source": "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/PhantomApp.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Phantom",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pause",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 19
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start",
+        "location": {
+          "startingColumn": 51,
+          "startingLine": 19
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings...",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "Hide Menu Bar Icon",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 36
+        }
+      },
+      {
+        "comment": "",
+        "key": "Quit Phantom",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 42
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings...",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 28
+        }
+      }
+    ]
+  },
+  "version": 1
+}

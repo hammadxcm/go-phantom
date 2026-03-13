@@ -1,0 +1,12 @@
+{
+  "/Users/hammadkhan/lw.xyz/phantom-macos/Phantom/PhantomApp.swift" : {
+    "abi-baseline-json" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Release/Phantom.build/Objects-normal/arm64/Phantom.abi.json",
+    "const-values" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Release/Phantom.build/Objects-normal/arm64/Phantom-primary.swiftconstvalues",
+    "dependencies" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Release/Phantom.build/Objects-normal/arm64/Phantom-primary.d",
+    "diagnostics" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Release/Phantom.build/Objects-normal/arm64/Phantom-primary.dia",
+    "objc-header" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Release/Phantom.build/Objects-normal/arm64/Phantom-Swift.h",
+    "swiftdoc" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Release/Phantom.build/Objects-normal/arm64/Phantom.swiftdoc",
+    "swiftmodule" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Release/Phantom.build/Objects-normal/arm64/Phantom.swiftmodule",
+    "swiftsourceinfo" : "/Users/hammadkhan/lw.xyz/phantom-macos/build/Build/Intermediates.noindex/Phantom.build/Release/Phantom.build/Objects-normal/arm64/Phantom.swiftsourceinfo"
+  }
+}

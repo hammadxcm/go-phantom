@@ -3,7 +3,7 @@ class Phantom < Formula
 
   desc "Cross-platform activity simulator"
   homepage "https://github.com/hammadxcm/go-phantom"
-  url "https://github.com/hammadxcm/go-phantom/archive/refs/tags/v0.0.1.tar.gz"
+  url "https://github.com/hammadxcm/go-phantom/archive/refs/tags/v0.0.2.tar.gz"
   sha256 "PLACEHOLDER_SHA256"
   license "MIT"
 

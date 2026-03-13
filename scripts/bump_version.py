@@ -184,6 +184,48 @@ def main():
                 f"PackageVersion: {new}",
             ),
         ),
+        # Astro landing page components
+        (
+            "docs/Downloads.astro",
+            lambda: replace_in_file(
+                ROOT / "docs" / "src" / "components" / "Downloads.astro",
+                rf'const version = "{re.escape(old)}";',
+                f'const version = "{new}";',
+            ),
+        ),
+        (
+            "docs/Hero.astro",
+            lambda: replace_in_file(
+                ROOT / "docs" / "src" / "components" / "Hero.astro",
+                rf'const version = "{re.escape(old)}";',
+                f'const version = "{new}";',
+            ),
+        ),
+        (
+            "docs/Footer.astro",
+            lambda: replace_in_file(
+                ROOT / "docs" / "src" / "components" / "Footer.astro",
+                rf'const version = "{re.escape(old)}";',
+                f'const version = "{new}";',
+            ),
+        ),
+        # macOS native app
+        (
+            "phantom-macos/Info.plist",
+            lambda: replace_in_file(
+                ROOT / "phantom-macos" / "Phantom" / "Info.plist",
+                rf"<string>{re.escape(old)}</string>",
+                f"<string>{new}</string>",
+            ),
+        ),
+        (
+            "phantom-macos/project.pbxproj",
+            lambda: replace_in_file(
+                ROOT / "phantom-macos" / "Phantom.xcodeproj" / "project.pbxproj",
+                rf"MARKETING_VERSION = {re.escape(old)};",
+                f"MARKETING_VERSION = {new};",
+            ),
+        ),
     ]
 
     for name, update_fn in updates:

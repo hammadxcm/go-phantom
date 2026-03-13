@@ -93,8 +93,64 @@ jobs:
           name: phantom-deb
           path: '*.deb'
 
+  # ─── Native macOS App (.dmg) ──────────────────────────────────────────────
+  build-macos-native:
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set version
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          DMG_NAME="Phantom-${VERSION}-beta.dmg"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "dmg_name=$DMG_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Build universal binary
+        run: |
+          xcodebuild -project phantom-macos/Phantom.xcodeproj \
+            -scheme Phantom \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="-" \
+            ARCHS="arm64 x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            MARKETING_VERSION="${{ steps.version.outputs.version }}" \
+            build
+
+      - name: Locate .app
+        id: locate
+        run: |
+          APP_PATH=$(find build -name "Phantom.app" -type d | head -1)
+          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Phantom" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "Phantom.app" 150 190 \
+            --app-drop-link 450 190 \
+            --no-internet-enable \
+            "${{ steps.version.outputs.dmg_name }}" \
+            "${{ steps.locate.outputs.app_path }}" || true
+          ls -la "${{ steps.version.outputs.dmg_name }}"
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: Phantom-macOS-native
+          path: ${{ steps.version.outputs.dmg_name }}
+
   release:
-    needs: [build, build-deb]
+    needs: [build, build-deb, build-macos-native]
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -114,6 +170,7 @@ jobs:
             artifacts/phantom-linux-x86_64/phantom-linux-x86_64
             artifacts/phantom-windows.exe/phantom-windows.exe
             artifacts/phantom-deb/*.deb
+            artifacts/Phantom-macOS-native/Phantom-*-beta.dmg
 
   # ─── Snap Store (Linux) ──────────────────────────────────────────────────────
   publish-snap:

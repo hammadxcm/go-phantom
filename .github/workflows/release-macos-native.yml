@@ -1,0 +1,121 @@
+name: Build macOS Native App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos-native:
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set version
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          # Fallback for workflow_dispatch without tag
+          if [ -z "$VERSION" ] || [ "$VERSION" = "$GITHUB_REF_NAME" ]; then
+            VERSION=$(grep -o '"[0-9]*\.[0-9]*\.[0-9]*"' phantom/__init__.py | tr -d '"')
+          fi
+          DMG_NAME="Phantom-${VERSION}-beta.dmg"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "dmg_name=$DMG_NAME" >> "$GITHUB_OUTPUT"
+          echo "Building $DMG_NAME"
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Build universal binary
+        run: |
+          xcodebuild -project phantom-macos/Phantom.xcodeproj \
+            -scheme Phantom \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="-" \
+            ARCHS="arm64 x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            MARKETING_VERSION="${{ steps.version.outputs.version }}" \
+            build
+
+      - name: Locate .app
+        id: locate
+        run: |
+          APP_PATH=$(find build -name "Phantom.app" -type d | head -1)
+          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
+          echo "Found app at: $APP_PATH"
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Phantom" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "Phantom.app" 150 190 \
+            --app-drop-link 450 190 \
+            --no-internet-enable \
+            "${{ steps.version.outputs.dmg_name }}" \
+            "${{ steps.locate.outputs.app_path }}" || true
+          # create-dmg returns 2 on success when there's no background image
+          ls -la "${{ steps.version.outputs.dmg_name }}"
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: Phantom-macOS-native
+          path: ${{ steps.version.outputs.dmg_name }}
+
+      # ─── Future: Code Signing & Notarization ──────────────────────────
+      # When an Apple Developer ID cert is available, uncomment these steps:
+      #
+      # - name: Import signing certificate
+      #   env:
+      #     CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+      #     CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      #   run: |
+      #     echo "$CERTIFICATE_P12" | base64 --decode > cert.p12
+      #     KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain
+      #     security create-keychain -p "" "$KEYCHAIN_PATH"
+      #     security set-keychain-settings -lut 3600 "$KEYCHAIN_PATH"
+      #     security unlock-keychain -p "" "$KEYCHAIN_PATH"
+      #     security import cert.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+      #     security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
+      #     security list-keychain -d user -s "$KEYCHAIN_PATH"
+      #
+      # - name: Build signed archive
+      #   run: |
+      #     xcodebuild -project phantom-macos/Phantom.xcodeproj \
+      #       -scheme Phantom \
+      #       -configuration Release \
+      #       -archivePath build/Phantom.xcarchive \
+      #       CODE_SIGN_IDENTITY="Developer ID Application" \
+      #       DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
+      #       ARCHS="arm64 x86_64" \
+      #       archive
+      #
+      # - name: Export archive
+      #   run: |
+      #     xcodebuild -exportArchive \
+      #       -archivePath build/Phantom.xcarchive \
+      #       -exportPath build/export \
+      #       -exportOptionsPlist phantom-macos/ExportOptions.plist
+      #
+      # - name: Notarize
+      #   env:
+      #     APPLE_ID: ${{ secrets.APPLE_ID }}
+      #     APPLE_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+      #     APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      #   run: |
+      #     xcrun notarytool submit "${{ steps.version.outputs.dmg_name }}" \
+      #       --apple-id "$APPLE_ID" \
+      #       --password "$APPLE_PASSWORD" \
+      #       --team-id "$APPLE_TEAM_ID" \
+      #       --wait
+      #     xcrun stapler staple "${{ steps.version.outputs.dmg_name }}"
