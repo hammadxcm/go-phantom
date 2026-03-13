@@ -26,8 +26,8 @@ const platforms = {
     ],
     note: {
       title: "macOS Gatekeeper",
-      text: 'The app is not yet code-signed. After downloading, remove the quarantine attribute before running:',
-      cmd: `xattr -d com.apple.quarantine Phantom-${version}-beta.dmg`,
+      text: 'The app is not yet code-signed. After installing, remove the quarantine attribute:',
+      cmd: "xattr -cr /Applications/Phantom.app",
     },
   },
   linux: {
