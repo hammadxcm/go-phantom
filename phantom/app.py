@@ -42,6 +42,10 @@ def _print_status(state: str) -> None:
     """Print a visible status banner to the console."""
     import sys as _sys
 
+    # sys.stdout is None when running as a PyInstaller GUI app on Windows
+    if _sys.stdout is None:
+        return
+
     if state == "on":
         print(f"\n{GREEN}{BOLD}  ▶ Phantom ON  — Simulation running{RESET}")
         print(f"{DIM}    Ctrl+Alt+S to pause  |  Ctrl+Alt+Q to quit{RESET}\n")
@@ -55,6 +59,12 @@ def _print_status(state: str) -> None:
 
 def _print_logo(config) -> None:
     """Print the ASCII art logo with version and simulator info."""
+    import sys as _sys
+
+    # sys.stdout is None when running as a PyInstaller GUI app on Windows
+    if _sys.stdout is None:
+        return
+
     try:
         from rich.console import Console
         from rich.text import Text
