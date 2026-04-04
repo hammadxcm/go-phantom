@@ -12,6 +12,7 @@ _SIM_COLORS: dict[str, str] = {
     "phantom.simulators.scroll": YELLOW,
     "phantom.simulators.app_switcher": MAGENTA,
     "phantom.simulators.browser_tabs": BLUE,
+    "phantom.simulators.code_typing": GREEN,
 }
 
 

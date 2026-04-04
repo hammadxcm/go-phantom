@@ -29,13 +29,16 @@ class AppSwitcherSimulator(BaseSimulator):
         self._controller = Controller()
         self._modifier = Key.cmd if current_os() == OS.MACOS else Key.alt
 
-    def execute(self, config: AppSwitcherConfig) -> None:
+    def execute(self, config: AppSwitcherConfig) -> str:
         """Simulate Alt+Tab or Cmd+Tab app switching.
 
         Args:
             config: App switcher simulator configuration.
+
+        Returns:
+            Detail string describing the app switch action.
         """
-        tabs = random.randint(1, 3)
+        tabs = random.randint(config.min_tabs, config.max_tabs)
 
         self._controller.press(self._modifier)
         try:
@@ -51,4 +54,7 @@ class AppSwitcherSimulator(BaseSimulator):
         finally:
             self._controller.release(self._modifier)
 
-        self.log.debug("App switch: %d tabs", tabs)
+        mod_name = "Cmd" if self._modifier == Key.cmd else "Alt"
+        detail = f"App switch {tabs} tabs via {mod_name}+Tab"
+        self.log.info(detail)
+        return detail

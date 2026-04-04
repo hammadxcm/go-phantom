@@ -5,6 +5,7 @@ from __future__ import annotations
 from phantom.simulators.app_switcher import AppSwitcherSimulator
 from phantom.simulators.base import BaseSimulator
 from phantom.simulators.browser_tabs import BrowserTabsSimulator
+from phantom.simulators.code_typing import CodeTypingSimulator
 from phantom.simulators.keyboard import KeyboardSimulator
 from phantom.simulators.mouse import MouseSimulator
 from phantom.simulators.scroll import ScrollSimulator
@@ -14,6 +15,7 @@ __all__ = [
     "AppSwitcherSimulator",
     "BaseSimulator",
     "BrowserTabsSimulator",
+    "CodeTypingSimulator",
     "KeyboardSimulator",
     "MouseSimulator",
     "ScrollSimulator",
@@ -30,6 +32,7 @@ SIMULATOR_REGISTRY: dict[str, type[BaseSimulator]] = {
     "scroll": ScrollSimulator,
     "app_switcher": AppSwitcherSimulator,
     "browser_tabs": BrowserTabsSimulator,
+    "code_typing": CodeTypingSimulator,
 }
 
 

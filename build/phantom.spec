@@ -24,6 +24,8 @@ a = Analysis(
         "pystray._darwin",
         "pystray._win32",
         "pystray._xorg",
+        "tkinter",
+        "tkinter.ttk",
         "rich",
         "rich.logging",
         "rich.live",
@@ -31,6 +33,16 @@ a = Analysis(
         "rich.panel",
         "rich.table",
         "rich.text",
+        "textual",
+        "textual.app",
+        "textual.binding",
+        "textual.containers",
+        "textual.screen",
+        "textual.widgets",
+        "textual.widgets._rich_log",
+        "textual.widgets._static",
+        "setproctitle",
+        "pyautogui",
     ],
     hookspath=[],
     hooksconfig={},
@@ -43,6 +55,8 @@ a = Analysis(
 )
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+ico_path = str(root / "assets" / "phantom.ico")
 
 exe = EXE(
     pyz,
@@ -64,4 +78,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=ico_path,
 )

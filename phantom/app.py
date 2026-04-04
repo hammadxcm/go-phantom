@@ -11,8 +11,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from phantom.ui.dashboard import Dashboard
 
-import pyautogui
-
 from phantom.config.manager import ConfigManager
 from phantom.constants import ALL_SIMULATORS_SET
 from phantom.core.platform import check_platform_requirements
@@ -147,8 +145,10 @@ class PhantomApp:
             on_toggle=self._handle_hotkey_toggle,
             on_quit=self._handle_quit,
             on_hide=self._handle_hide,
+            on_code_typing=self._handle_code_typing_toggle,
         )
         self._dashboard: Dashboard | None = None
+        self._gui: object | None = None
         self._tail_stop = threading.Event()
 
     def run(self, mode: OutputMode = OutputMode.TRAY, log_handler=None) -> None:
@@ -161,6 +161,8 @@ class PhantomApp:
                 feed log records into the dashboard.
         """
         # Disable pyautogui failsafe (corner abort)
+        import pyautogui
+
         pyautogui.FAILSAFE = False
         pyautogui.PAUSE = 0
 
@@ -203,6 +205,8 @@ class PhantomApp:
             self._run_tail_mode(cfg)
         elif mode == OutputMode.GHOST:
             self._run_ghost_mode(cfg)
+        elif mode == OutputMode.GUI:
+            self._run_gui_mode(cfg)
         else:
             _print_logo(cfg)
             self._tray.update_status(True)
@@ -227,6 +231,31 @@ class PhantomApp:
         log.info("Phantom started (ghost mode). Press %s to toggle.", cfg.hotkeys.toggle)
         # Run tray on main thread (required on macOS)
         self._tray.run()
+
+    def _run_gui_mode(self, cfg) -> None:
+        """GUI mode — tkinter window with optional tray icon."""
+        import sys
+
+        from phantom.ui.gui import PhantomGUI
+
+        gui = PhantomGUI(
+            stats=self._stats,
+            config=cfg,
+            config_lock=self._config_lock,
+            on_toggle=self._handle_toggle,
+            on_quit=self._handle_quit,
+            on_save_config=self._handle_save_config,
+            on_sim_pause=self._handle_sim_pause,
+            preset_name=self._preset_name,
+        )
+        self._gui = gui
+        # On Windows, run tray on a background thread (pystray supports this)
+        if sys.platform == "win32":
+            self._tray._on_show_window = lambda: gui._root.after(0, gui._root.deiconify)
+            threading.Thread(target=self._tray.run, daemon=True).start()
+        self._tray.update_status(True)
+        log.info("Phantom started (GUI mode).")
+        gui.run()  # tkinter mainloop on main thread
 
     def _handle_toggle(self) -> bool:
         """Toggle the scheduler between running and paused.
@@ -267,6 +296,14 @@ class PhantomApp:
             self._tray.hide()
             with self._config_lock:
                 cfg.stealth.hide_tray = True
+
+    def _handle_code_typing_toggle(self) -> None:
+        """Toggle code-typing simulator on/off via hotkey."""
+        cfg = self._config_mgr.config
+        with self._config_lock:
+            cfg.code_typing.enabled = not cfg.code_typing.enabled
+        state = "enabled" if cfg.code_typing.enabled else "disabled"
+        log.info("Code typing %s (hotkey)", state)
 
     def _handle_sim_toggle(self, sim_name: str) -> None:
         """Handle individual simulator toggle from TUI."""
@@ -327,6 +364,8 @@ class PhantomApp:
     @staticmethod
     def _restore_failsafe() -> None:
         """Restore pyautogui failsafe on exit."""
+        import pyautogui
+
         pyautogui.FAILSAFE = True
 
     @staticmethod

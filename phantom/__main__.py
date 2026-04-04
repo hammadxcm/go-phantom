@@ -9,6 +9,44 @@ import sys
 from phantom.constants import ALL_SIMULATORS_SET
 
 
+def _has_console() -> bool:
+    """Return True when stdout and stderr are available."""
+    return sys.stdout is not None and sys.stderr is not None
+
+
+def _warn(msg: str) -> None:
+    """Print a warning to stderr if available."""
+    if sys.stderr is not None:
+        print(msg, file=sys.stderr)
+
+
+def _setup_file_logging(level: int) -> logging.Handler:
+    """Configure and return a RotatingFileHandler to ~/.phantom/phantom.log."""
+    from logging.handlers import RotatingFileHandler
+    from pathlib import Path
+
+    log_dir = Path.home() / ".phantom"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    file_handler = RotatingFileHandler(
+        log_dir / "phantom.log",
+        maxBytes=5 * 1024 * 1024,
+        backupCount=3,
+    )
+    file_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+            datefmt="%H:%M:%S",
+        ),
+    )
+    logging.basicConfig(
+        level=level,
+        format="%(message)s",
+        datefmt="%H:%M:%S",
+        handlers=[file_handler],
+    )
+    return file_handler
+
+
 def _build_parser() -> argparse.ArgumentParser:
     """Build and return the CLI argument parser.
 
@@ -69,6 +107,11 @@ examples:
         "--ghost",
         action="store_true",
         help="Zero terminal output, logs to ~/.phantom/phantom.log",
+    )
+    mode_group.add_argument(
+        "--gui",
+        action="store_true",
+        help="Launch tkinter GUI window (default on Windows without console)",
     )
 
     parser.add_argument(
@@ -165,6 +208,44 @@ examples:
         metavar=("MIN", "MAX"),
         help="Scroll click range per action (default: 1 5)",
     )
+    tuning_group.add_argument(
+        "--capslock-chance",
+        type=float,
+        metavar="PROB",
+        help="CapsLock double-tap probability, 0-1 (default: 0.15)",
+    )
+    tuning_group.add_argument(
+        "--horizontal-scroll-chance",
+        type=float,
+        metavar="PROB",
+        help="Horizontal scroll probability, 0-1 (default: 0.1)",
+    )
+    tuning_group.add_argument(
+        "--app-switcher-tabs",
+        type=int,
+        nargs=2,
+        metavar=("MIN", "MAX"),
+        help="App switcher tab range (default: 1 3)",
+    )
+    tuning_group.add_argument(
+        "--browser-tabs-count",
+        type=int,
+        nargs=2,
+        metavar=("MIN", "MAX"),
+        help="Browser tabs switch count range (default: 1 4)",
+    )
+    tuning_group.add_argument(
+        "--code-typing-chars",
+        type=int,
+        nargs=2,
+        metavar=("MIN", "MAX"),
+        help="Code typing character count range (default: 10 60)",
+    )
+    tuning_group.add_argument(
+        "--code-typing-file",
+        metavar="PATH",
+        help="Text file to read typing snippets from (one per line)",
+    )
 
     # ─── Weight overrides ────────────────────────────────────────────────────
     weight_group = parser.add_argument_group("weights (higher = more frequent)")
@@ -197,6 +278,12 @@ examples:
         type=float,
         metavar="W",
         help="Browser tabs weight (default: 5)",
+    )
+    weight_group.add_argument(
+        "--code-typing-weight",
+        type=float,
+        metavar="W",
+        help="Code typing weight (default: 20)",
     )
 
     # ─── Stealth ─────────────────────────────────────────────────────────────
@@ -234,6 +321,11 @@ examples:
         metavar="KEYS",
         help="Hide tray hotkey (default: <ctrl>+<alt>+h)",
     )
+    hotkey_group.add_argument(
+        "--hotkey-code-typing",
+        metavar="KEYS",
+        help="Code typing toggle hotkey (default: <ctrl>+<alt>+t)",
+    )
 
     return parser
 
@@ -259,10 +351,8 @@ def _apply_sim_selection(args: argparse.Namespace, overrides: dict) -> None:
         user_set = {s.strip() for s in args.only.split(",")}
         unknown = user_set - ALL_SIMULATORS_SET
         if unknown:
-            import sys
-
             names = ", ".join(sorted(unknown))
-            print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
+            _warn(f"Warning: unknown simulators ignored: {names}")
         overrides["_only"] = user_set & ALL_SIMULATORS_SET
     elif getattr(args, "all", False):
         overrides["_only"] = set(ALL_SIMULATORS_SET)
@@ -271,19 +361,15 @@ def _apply_sim_selection(args: argparse.Namespace, overrides: dict) -> None:
         user_set = {s.strip() for s in args.enable.split(",")}
         unknown = user_set - ALL_SIMULATORS_SET
         if unknown:
-            import sys
-
             names = ", ".join(sorted(unknown))
-            print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
+            _warn(f"Warning: unknown simulators ignored: {names}")
         overrides["_enable"] = user_set & ALL_SIMULATORS_SET
     if args.disable:
         user_set = {s.strip() for s in args.disable.split(",")}
         unknown = user_set - ALL_SIMULATORS_SET
         if unknown:
-            import sys
-
             names = ", ".join(sorted(unknown))
-            print(f"Warning: unknown simulators ignored: {names}", file=sys.stderr)
+            _warn(f"Warning: unknown simulators ignored: {names}")
         overrides["_disable"] = user_set & ALL_SIMULATORS_SET
 
 
@@ -324,6 +410,21 @@ def _apply_tuning_overrides(args: argparse.Namespace, overrides: dict) -> None:
     if args.scroll_clicks:
         overrides.setdefault("scroll", {})["min_clicks"] = args.scroll_clicks[0]
         overrides["scroll"]["max_clicks"] = args.scroll_clicks[1]
+    if args.capslock_chance is not None:
+        overrides.setdefault("keyboard", {})["capslock_chance"] = args.capslock_chance
+    if args.horizontal_scroll_chance is not None:
+        overrides.setdefault("scroll", {})["horizontal_chance"] = args.horizontal_scroll_chance
+    if args.app_switcher_tabs:
+        overrides.setdefault("app_switcher", {})["min_tabs"] = args.app_switcher_tabs[0]
+        overrides["app_switcher"]["max_tabs"] = args.app_switcher_tabs[1]
+    if args.browser_tabs_count:
+        overrides.setdefault("browser_tabs", {})["min_tabs"] = args.browser_tabs_count[0]
+        overrides["browser_tabs"]["max_tabs"] = args.browser_tabs_count[1]
+    if args.code_typing_chars:
+        overrides.setdefault("code_typing", {})["min_chars"] = args.code_typing_chars[0]
+        overrides["code_typing"]["max_chars"] = args.code_typing_chars[1]
+    if args.code_typing_file:
+        overrides.setdefault("code_typing", {})["source_file"] = args.code_typing_file
 
 
 def _apply_weight_overrides(args: argparse.Namespace, overrides: dict) -> None:
@@ -346,6 +447,8 @@ def _apply_weight_overrides(args: argparse.Namespace, overrides: dict) -> None:
         overrides.setdefault("app_switcher", {})["weight"] = args.app_switcher_weight
     if args.browser_tabs_weight is not None:
         overrides.setdefault("browser_tabs", {})["weight"] = args.browser_tabs_weight
+    if args.code_typing_weight is not None:
+        overrides.setdefault("code_typing", {})["weight"] = args.code_typing_weight
 
 
 def _apply_stealth_overrides(args: argparse.Namespace, overrides: dict) -> None:
@@ -380,6 +483,8 @@ def _apply_hotkey_overrides(args: argparse.Namespace, overrides: dict) -> None:
         overrides.setdefault("hotkeys", {})["quit"] = args.hotkey_quit
     if args.hotkey_hide:
         overrides.setdefault("hotkeys", {})["hide_tray"] = args.hotkey_hide
+    if args.hotkey_code_typing:
+        overrides.setdefault("hotkeys", {})["code_typing"] = args.hotkey_code_typing
 
 
 def _apply_cli_overrides(args: argparse.Namespace) -> dict:
@@ -407,8 +512,9 @@ def _apply_cli_overrides(args: argparse.Namespace) -> dict:
 def _resolve_mode(args: argparse.Namespace):
     """Resolve CLI flags to an ``OutputMode`` enum value.
 
-    Checks ``--tui``, ``--tail``, and ``--ghost`` flags in order and
-    falls back to ``OutputMode.TRAY``.
+    Checks ``--tui``, ``--tail``, ``--ghost``, and ``--gui`` flags in
+    order.  When no flag is given, auto-selects GUI on Windows without a
+    console and falls back to TRAY otherwise.
 
     Args:
         args: Parsed CLI namespace.
@@ -424,6 +530,11 @@ def _resolve_mode(args: argparse.Namespace):
         return OutputMode.TAIL
     if args.ghost:
         return OutputMode.GHOST
+    if args.gui:
+        return OutputMode.GUI
+    # Auto-select GUI on Windows when there is no console
+    if sys.platform == "win32" and not _has_console():
+        return OutputMode.GUI
     return OutputMode.TRAY
 
 
@@ -445,12 +556,25 @@ def main() -> None:
         parser.error("--mouse-distance MIN must be <= MAX")
     if args.scroll_clicks and args.scroll_clicks[0] > args.scroll_clicks[1]:
         parser.error("--scroll-clicks MIN must be <= MAX")
+    if args.capslock_chance is not None and not (0.0 <= args.capslock_chance <= 1.0):
+        parser.error("--capslock-chance must be between 0.0 and 1.0")
+    if args.horizontal_scroll_chance is not None and not (
+        0.0 <= args.horizontal_scroll_chance <= 1.0
+    ):
+        parser.error("--horizontal-scroll-chance must be between 0.0 and 1.0")
+    if args.app_switcher_tabs and args.app_switcher_tabs[0] > args.app_switcher_tabs[1]:
+        parser.error("--app-switcher-tabs MIN must be <= MAX")
+    if args.browser_tabs_count and args.browser_tabs_count[0] > args.browser_tabs_count[1]:
+        parser.error("--browser-tabs-count MIN must be <= MAX")
+    if args.code_typing_chars and args.code_typing_chars[0] > args.code_typing_chars[1]:
+        parser.error("--code-typing-chars MIN must be <= MAX")
     weight_args = [
         args.mouse_weight,
         args.keyboard_weight,
         args.scroll_weight,
         args.app_switcher_weight,
         args.browser_tabs_weight,
+        args.code_typing_weight,
     ]
     for w in weight_args:
         if w is not None and w < 0:
@@ -475,58 +599,42 @@ def main() -> None:
             handlers=handlers,
         )
     elif mode == OutputMode.TAIL:
-        from phantom.ui.tail_formatter import TailFormatter
+        if _has_console():
+            from phantom.ui.tail_formatter import TailFormatter
 
-        tail_handler = logging.StreamHandler(sys.stdout)
-        tail_handler.setFormatter(TailFormatter())
-        handlers = [tail_handler]
-        logging.basicConfig(
-            level=level,
-            format="%(message)s",
-            datefmt="%H:%M:%S",
-            handlers=handlers,
-        )
-    elif mode == OutputMode.GHOST:
-        from logging.handlers import RotatingFileHandler
-        from pathlib import Path
-
-        log_dir = Path.home() / ".phantom"
-        log_dir.mkdir(parents=True, exist_ok=True)
-        file_handler = RotatingFileHandler(
-            log_dir / "phantom.log",
-            maxBytes=5 * 1024 * 1024,
-            backupCount=3,
-        )
-        file_handler.setFormatter(
-            logging.Formatter(
-                "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-                datefmt="%H:%M:%S",
-            ),
-        )
-        handlers = [file_handler]
-        logging.basicConfig(
-            level=level,
-            format="%(message)s",
-            datefmt="%H:%M:%S",
-            handlers=handlers,
-        )
-    else:
-        try:
-            from rich.logging import RichHandler
-
-            handlers = [RichHandler(rich_tracebacks=True, show_path=False)]
+            tail_handler = logging.StreamHandler(sys.stdout)
+            tail_handler.setFormatter(TailFormatter())
+            handlers = [tail_handler]
             logging.basicConfig(
                 level=level,
                 format="%(message)s",
                 datefmt="%H:%M:%S",
                 handlers=handlers,
             )
-        except ImportError:
-            logging.basicConfig(
-                level=level,
-                format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-                datefmt="%H:%M:%S",
-            )
+        else:
+            _setup_file_logging(level)
+    elif mode in (OutputMode.GHOST, OutputMode.GUI):
+        _setup_file_logging(level)
+    else:
+        if _has_console():
+            try:
+                from rich.logging import RichHandler
+
+                handlers = [RichHandler(rich_tracebacks=True, show_path=False)]
+                logging.basicConfig(
+                    level=level,
+                    format="%(message)s",
+                    datefmt="%H:%M:%S",
+                    handlers=handlers,
+                )
+            except ImportError:
+                logging.basicConfig(
+                    level=level,
+                    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+                    datefmt="%H:%M:%S",
+                )
+        else:
+            _setup_file_logging(level)
 
     # Suppress noisy library loggers
     logging.getLogger("PIL").setLevel(logging.WARNING)
