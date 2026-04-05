@@ -19,6 +19,12 @@ class TestStatsBasic:
         assert snap["pauses"] == 0
         assert snap["active"] is False
 
+    def test_initial_detail_state(self):
+        stats = Stats()
+        snap = stats.snapshot()
+        assert snap["last_action_detail"] is None
+        assert snap["last_detail_per_sim"] == {}
+
     def test_record_action(self):
         stats = Stats()
         stats.record_action("mouse")
@@ -27,6 +33,29 @@ class TestStatsBasic:
         assert snap["actions_by_simulator"] == {"mouse": 1}
         assert snap["last_action_name"] == "mouse"
         assert snap["last_action_time"] is not None
+
+    def test_record_action_with_detail(self):
+        stats = Stats()
+        stats.record_action("mouse", "Mouse (0,0)->(100,100) dist=141px")
+        snap = stats.snapshot()
+        assert snap["last_action_detail"] == "Mouse (0,0)->(100,100) dist=141px"
+        assert snap["last_detail_per_sim"] == {"mouse": "Mouse (0,0)->(100,100) dist=141px"}
+
+    def test_detail_per_sim_tracks_each(self):
+        stats = Stats()
+        stats.record_action("mouse", "Mouse moved")
+        stats.record_action("keyboard", "Keyboard 2 presses: Shift, Ctrl")
+        snap = stats.snapshot()
+        assert snap["last_action_detail"] == "Keyboard 2 presses: Shift, Ctrl"
+        assert snap["last_detail_per_sim"]["mouse"] == "Mouse moved"
+        assert snap["last_detail_per_sim"]["keyboard"] == "Keyboard 2 presses: Shift, Ctrl"
+
+    def test_empty_detail_not_stored_in_per_sim(self):
+        stats = Stats()
+        stats.record_action("mouse", "")
+        snap = stats.snapshot()
+        assert snap["last_action_detail"] == ""
+        assert "mouse" not in snap["last_detail_per_sim"]
 
     def test_record_multiple_actions(self):
         stats = Stats()

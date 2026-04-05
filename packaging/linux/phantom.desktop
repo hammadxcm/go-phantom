@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Phantom
+Comment=Cross-platform activity simulator
+Exec=phantom --gui
+Icon=phantom
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupNotify=false

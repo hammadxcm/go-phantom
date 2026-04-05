@@ -67,15 +67,18 @@ class KeyboardConfig:
         enabled: Whether the keyboard simulator is active.
         weight: Relative selection weight among enabled simulators.
         max_presses: Maximum number of key presses per action.
+        capslock_chance: Probability (0-1) of a CapsLock double-tap instead of a modifier press.
     """
 
     enabled: bool = True
     weight: float = 30.0
     max_presses: int = 3
+    capslock_chance: float = 0.15
 
     def __post_init__(self) -> None:
         self.weight = max(0.0, self.weight)
         self.max_presses = max(1, self.max_presses)
+        self.capslock_chance = max(0.0, min(1.0, self.capslock_chance))
 
 
 @dataclass
@@ -87,17 +90,20 @@ class ScrollConfig:
         weight: Relative selection weight among enabled simulators.
         min_clicks: Minimum number of scroll clicks per action.
         max_clicks: Maximum number of scroll clicks per action.
+        horizontal_chance: Probability (0-1) of horizontal instead of vertical scroll.
     """
 
     enabled: bool = True
     weight: float = 15.0
     min_clicks: int = 1
     max_clicks: int = 5
+    horizontal_chance: float = 0.1
 
     def __post_init__(self) -> None:
         self.weight = max(0.0, self.weight)
         self.min_clicks = max(1, self.min_clicks)
         self.max_clicks = max(self.min_clicks, self.max_clicks)
+        self.horizontal_chance = max(0.0, min(1.0, self.horizontal_chance))
 
 
 @dataclass
@@ -107,13 +113,19 @@ class AppSwitcherConfig:
     Attributes:
         enabled: Whether the app-switcher simulator is active.
         weight: Relative selection weight among enabled simulators.
+        min_tabs: Minimum number of app switches per action.
+        max_tabs: Maximum number of app switches per action.
     """
 
     enabled: bool = False
     weight: float = 10.0
+    min_tabs: int = 1
+    max_tabs: int = 3
 
     def __post_init__(self) -> None:
         self.weight = max(0.0, self.weight)
+        self.min_tabs = max(1, self.min_tabs)
+        self.max_tabs = max(self.min_tabs, self.max_tabs)
 
 
 @dataclass
@@ -125,16 +137,53 @@ class BrowserTabsConfig:
         weight: Relative selection weight among enabled simulators.
         context_aware: Use the active-window context to pick shortcuts.
         backward_chance: Probability (0-1) of navigating backward instead of forward.
+        min_tabs: Minimum number of tab switches per action.
+        max_tabs: Maximum number of tab switches per action.
     """
 
     enabled: bool = False
     weight: float = 5.0
     context_aware: bool = True
     backward_chance: float = 0.3
+    min_tabs: int = 1
+    max_tabs: int = 4
 
     def __post_init__(self) -> None:
         self.weight = max(0.0, self.weight)
         self.backward_chance = max(0.0, min(1.0, self.backward_chance))
+        self.min_tabs = max(1, self.min_tabs)
+        self.max_tabs = max(self.min_tabs, self.max_tabs)
+
+
+@dataclass
+class CodeTypingConfig:
+    """Configuration for the code-typing simulator.
+
+    Attributes:
+        enabled: Whether the code-typing simulator is active.
+        weight: Relative selection weight among enabled simulators.
+        min_chars: Minimum characters to type per action.
+        max_chars: Maximum characters to type per action.
+        char_delay_min: Minimum delay in seconds between keystrokes.
+        char_delay_max: Maximum delay in seconds between keystrokes.
+        source_file: Path to a text file to read snippets from.
+            When empty, built-in code snippets are used.
+    """
+
+    enabled: bool = False
+    weight: float = 20.0
+    min_chars: int = 10
+    max_chars: int = 60
+    char_delay_min: float = 0.05
+    char_delay_max: float = 0.15
+    source_file: str = ""
+
+    def __post_init__(self) -> None:
+        self.weight = max(0.0, self.weight)
+        self.min_chars = max(1, self.min_chars)
+        self.max_chars = max(self.min_chars, self.max_chars)
+        self.char_delay_min = max(0.01, self.char_delay_min)
+        self.char_delay_max = max(self.char_delay_min, self.char_delay_max)
 
 
 @dataclass
@@ -150,6 +199,7 @@ class HotkeyConfig:
     toggle: str = "<ctrl>+<alt>+s"
     quit: str = "<ctrl>+<alt>+q"
     hide_tray: str = "<ctrl>+<alt>+h"
+    code_typing: str = "<ctrl>+<alt>+t"
 
 
 @dataclass
@@ -178,6 +228,7 @@ class PhantomConfig:
         scroll: Scroll-wheel simulator settings.
         app_switcher: Application-switcher simulator settings.
         browser_tabs: Browser-tab switching simulator settings.
+        code_typing: Code-typing simulator settings.
         hotkeys: Global hotkey bindings.
         stealth: Stealth and anti-detection settings.
     """
@@ -188,6 +239,7 @@ class PhantomConfig:
     scroll: ScrollConfig = field(default_factory=ScrollConfig)
     app_switcher: AppSwitcherConfig = field(default_factory=AppSwitcherConfig)
     browser_tabs: BrowserTabsConfig = field(default_factory=BrowserTabsConfig)
+    code_typing: CodeTypingConfig = field(default_factory=CodeTypingConfig)
     hotkeys: HotkeyConfig = field(default_factory=HotkeyConfig)
     stealth: StealthConfig = field(default_factory=StealthConfig)
 
@@ -204,4 +256,6 @@ class PhantomConfig:
             sims["app_switcher"] = self.app_switcher.weight
         if self.browser_tabs.enabled:
             sims["browser_tabs"] = self.browser_tabs.weight
+        if self.code_typing.enabled:
+            sims["code_typing"] = self.code_typing.weight
         return sims

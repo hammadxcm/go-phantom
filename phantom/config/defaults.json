@@ -17,26 +17,44 @@
   "keyboard": {
     "enabled": true,
     "weight": 30.0,
-    "max_presses": 3
+    "max_presses": 3,
+    "capslock_chance": 0.15
   },
   "scroll": {
     "enabled": true,
     "weight": 15.0,
     "min_clicks": 1,
-    "max_clicks": 5
+    "max_clicks": 5,
+    "horizontal_chance": 0.1
   },
   "app_switcher": {
     "enabled": false,
-    "weight": 10.0
+    "weight": 10.0,
+    "min_tabs": 1,
+    "max_tabs": 3
   },
   "browser_tabs": {
     "enabled": false,
-    "weight": 5.0
+    "weight": 5.0,
+    "context_aware": true,
+    "backward_chance": 0.3,
+    "min_tabs": 1,
+    "max_tabs": 4
+  },
+  "code_typing": {
+    "enabled": false,
+    "weight": 20.0,
+    "min_chars": 10,
+    "max_chars": 60,
+    "char_delay_min": 0.05,
+    "char_delay_max": 0.15,
+    "source_file": ""
   },
   "hotkeys": {
     "toggle": "<ctrl>+<alt>+s",
     "quit": "<ctrl>+<alt>+q",
-    "hide_tray": "<ctrl>+<alt>+h"
+    "hide_tray": "<ctrl>+<alt>+h",
+    "code_typing": "<ctrl>+<alt>+t"
   },
   "stealth": {
     "rename_process": true,

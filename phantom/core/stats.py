@@ -21,20 +21,26 @@ class Stats:
         self._actions_by_simulator: dict[str, int] = {}
         self._last_action_name: str | None = None
         self._last_action_time: float | None = None
+        self._last_action_detail: str | None = None
+        self._last_detail_per_sim: dict[str, str] = {}
         self._pauses = 0
         self._active = False
 
-    def record_action(self, name: str) -> None:
+    def record_action(self, name: str, detail: str = "") -> None:
         """Record that a simulator action was executed.
 
         Args:
             name: Simulator name (e.g. ``"mouse"``, ``"keyboard"``).
+            detail: Human-readable description of what happened.
         """
         with self._lock:
             self._total_actions += 1
             self._actions_by_simulator[name] = self._actions_by_simulator.get(name, 0) + 1
             self._last_action_name = name
             self._last_action_time = time.monotonic()
+            self._last_action_detail = detail
+            if detail:
+                self._last_detail_per_sim[name] = detail
 
     def uptime(self) -> float:
         """Seconds since stats were initialized.
@@ -71,6 +77,8 @@ class Stats:
                 "actions_by_simulator": dict(self._actions_by_simulator),
                 "last_action_name": self._last_action_name,
                 "last_action_time": self._last_action_time,
+                "last_action_detail": self._last_action_detail,
+                "last_detail_per_sim": dict(self._last_detail_per_sim),
                 "pauses": self._pauses,
                 "active": self._active,
             }

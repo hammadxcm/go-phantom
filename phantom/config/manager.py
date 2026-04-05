@@ -13,6 +13,7 @@ from typing import Any
 from phantom.config.schema import (
     AppSwitcherConfig,
     BrowserTabsConfig,
+    CodeTypingConfig,
     HotkeyConfig,
     KeyboardConfig,
     MouseConfig,
@@ -31,6 +32,7 @@ _SECTION_MAP = {
     "scroll": ScrollConfig,
     "app_switcher": AppSwitcherConfig,
     "browser_tabs": BrowserTabsConfig,
+    "code_typing": CodeTypingConfig,
     "hotkeys": HotkeyConfig,
     "stealth": StealthConfig,
 }

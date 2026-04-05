@@ -40,6 +40,7 @@ _SIM_KEYS = {
     "3": "scroll",
     "4": "app_switcher",
     "5": "browser_tabs",
+    "6": "code_typing",
 }
 
 
@@ -111,7 +112,7 @@ class HelpScreen(ModalScreen):
         bindings = [
             ("S", "Toggle all simulators on/off"),
             ("\u2191 / \u2193", "Navigate simulators"),
-            ("1-5", "Select sim (2nd press: deselect + toggle enabled)"),
+            ("1-6", "Select sim (2nd press: deselect + toggle enabled)"),
             ("\u2190 / \u2192", "Adjust selected weight or interval speed"),
             ("+ / =", "Increase weight (+5) or decrease interval (faster)"),
             ("-", "Decrease weight (-5) or increase interval (slower)"),
@@ -275,6 +276,7 @@ class PhantomDashboard(App):
         Binding("3", "sim_select('3')", "Sim 3", show=False),
         Binding("4", "sim_select('4')", "Sim 4", show=False),
         Binding("5", "sim_select('5')", "Sim 5", show=False),
+        Binding("6", "sim_select('6')", "Sim 6", show=False),
         Binding("up", "arrow_up", "Up", show=False),
         Binding("down", "arrow_down", "Down", show=False),
         Binding("left", "speed_down", "Speed-", show=False),
@@ -341,7 +343,7 @@ class PhantomDashboard(App):
         snap = self._stats.snapshot()
         self.query_one("#header", Static).update(self._build_header(snap))
         self.query_one("#stats", Static).update(self._build_stats_table(snap))
-        self.query_one("#preview", Static).update(self._build_preview_text())
+        self.query_one("#preview", Static).update(self._build_preview_text(snap))
         self.query_one("#footer", Static).update(self._build_footer())
         self._append_new_logs()
 
@@ -440,42 +442,34 @@ class PhantomDashboard(App):
 
         last = snap["last_action_name"]
         if last:
+            last_detail = snap.get("last_action_detail", "")
+            last_label = last.replace("_", " ").title()
+            last_text = f"{last_label}: {last_detail}" if last_detail else last_label
             table.add_row(
                 "",
                 "",
                 "",
                 Text("Last", style="dim"),
                 "",
-                Text(last.replace("_", " ").title(), style="dim"),
+                Text(last_text, style="dim"),
             )
 
         return table
 
-    def _build_preview_text(self) -> Text:
-        entries = self._log_handler.lines_styled
+    def _build_preview_text(self, snap: dict) -> Text:
+        detail_per_sim = snap.get("last_detail_per_sim", {})
         sim_colors = self._theme["sim_colors"]
-        last_per_sim: dict[str, str] = {}
-
-        for msg, logger_name, _level in reversed(entries):
-            sim = _logger_to_sim(logger_name)
-            if sim and sim in sim_colors and sim not in last_per_sim:
-                last_per_sim[sim] = msg
-            if len(last_per_sim) == len(ALL_SIMULATORS):
-                break
 
         text = Text()
-        if not last_per_sim:
+        if not detail_per_sim:
             text.append("(no actions yet)", style="dim")
         else:
             for sim_name in ALL_SIMULATORS:
-                if sim_name in last_per_sim:
+                if detail_per_sim.get(sim_name):
                     color = sim_colors.get(sim_name, "white")
                     label = sim_name.replace("_", " ").title()
-                    msg = last_per_sim[sim_name]
-                    parts = msg.split(" ", 1)
-                    action_text = parts[1] if len(parts) > 1 else msg
                     text.append(f"  {label}", style=f"bold {color}")
-                    text.append(f" \u2192 {action_text}\n", style=color)
+                    text.append(f" \u2192 {detail_per_sim[sim_name]}\n", style=color)
 
         return text
 

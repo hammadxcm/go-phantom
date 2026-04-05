@@ -12,3 +12,4 @@ class OutputMode(Enum):
     TUI = "tui"  # Rich dashboard
     TAIL = "tail"  # streaming colored logs
     GHOST = "ghost"  # silent, file-only logging
+    GUI = "gui"  # tkinter GUI window

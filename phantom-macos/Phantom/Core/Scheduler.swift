@@ -21,6 +21,9 @@ final class Scheduler {
     private(set) var actionsBySimulator: [String: Int] = [:]
     private(set) var lastActionName: String?
 
+    /// Called on each action with the simulator name.
+    var onAction: ((String) -> Void)?
+
     var isRunning: Bool {
         lock.lock()
         defer { lock.unlock() }
@@ -152,6 +155,8 @@ final class Scheduler {
         actionsBySimulator[chosen, default: 0] += 1
         lastActionName = chosen
         lock.unlock()
+
+        onAction?(chosen)
 
         // Schedule next tick after Gaussian interval
         let interval = Randomizer.actionInterval(
