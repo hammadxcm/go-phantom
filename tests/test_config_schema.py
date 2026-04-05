@@ -5,6 +5,7 @@ from __future__ import annotations
 from phantom.config.schema import (
     AppSwitcherConfig,
     BrowserTabsConfig,
+    CodeTypingConfig,
     HotkeyConfig,
     KeyboardConfig,
     MouseConfig,
@@ -47,6 +48,13 @@ class TestKeyboardConfig:
         assert c.enabled is True
         assert c.weight == 30.0
         assert c.max_presses == 3
+        assert c.capslock_chance == 0.15
+
+    def test_capslock_chance_clamped(self):
+        c = KeyboardConfig(capslock_chance=2.0)
+        assert c.capslock_chance == 1.0
+        c = KeyboardConfig(capslock_chance=-0.5)
+        assert c.capslock_chance == 0.0
 
 
 class TestScrollConfig:
@@ -56,6 +64,13 @@ class TestScrollConfig:
         assert c.weight == 15.0
         assert c.min_clicks == 1
         assert c.max_clicks == 5
+        assert c.horizontal_chance == 0.1
+
+    def test_horizontal_chance_clamped(self):
+        c = ScrollConfig(horizontal_chance=1.5)
+        assert c.horizontal_chance == 1.0
+        c = ScrollConfig(horizontal_chance=-0.1)
+        assert c.horizontal_chance == 0.0
 
 
 class TestAppSwitcherConfig:
@@ -63,6 +78,14 @@ class TestAppSwitcherConfig:
         c = AppSwitcherConfig()
         assert c.enabled is False
         assert c.weight == 10.0
+        assert c.min_tabs == 1
+        assert c.max_tabs == 3
+
+    def test_tabs_validation(self):
+        c = AppSwitcherConfig(min_tabs=0, max_tabs=2)
+        assert c.min_tabs == 1
+        c = AppSwitcherConfig(min_tabs=5, max_tabs=3)
+        assert c.max_tabs == 5
 
 
 class TestBrowserTabsConfig:
@@ -70,6 +93,36 @@ class TestBrowserTabsConfig:
         c = BrowserTabsConfig()
         assert c.enabled is False
         assert c.weight == 5.0
+        assert c.min_tabs == 1
+        assert c.max_tabs == 4
+
+    def test_tabs_validation(self):
+        c = BrowserTabsConfig(min_tabs=0, max_tabs=2)
+        assert c.min_tabs == 1
+        c = BrowserTabsConfig(min_tabs=5, max_tabs=3)
+        assert c.max_tabs == 5
+
+
+class TestCodeTypingConfig:
+    def test_defaults(self):
+        c = CodeTypingConfig()
+        assert c.enabled is False
+        assert c.weight == 20.0
+        assert c.min_chars == 10
+        assert c.max_chars == 60
+        assert c.char_delay_min == 0.05
+        assert c.char_delay_max == 0.15
+
+    def test_chars_validation(self):
+        c = CodeTypingConfig(min_chars=0, max_chars=5)
+        assert c.min_chars == 1
+        c = CodeTypingConfig(min_chars=10, max_chars=5)
+        assert c.max_chars == 10
+
+    def test_delay_validation(self):
+        c = CodeTypingConfig(char_delay_min=0.001, char_delay_max=0.005)
+        assert c.char_delay_min == 0.01  # clamped to min 0.01
+        assert c.char_delay_max == 0.01  # clamped to >= min
 
 
 class TestHotkeyConfig:
@@ -78,6 +131,7 @@ class TestHotkeyConfig:
         assert c.toggle == "<ctrl>+<alt>+s"
         assert c.quit == "<ctrl>+<alt>+q"
         assert c.hide_tray == "<ctrl>+<alt>+h"
+        assert c.code_typing == "<ctrl>+<alt>+t"
 
 
 class TestStealthConfig:

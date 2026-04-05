@@ -24,6 +24,7 @@ class FakeSimulator(BaseSimulator):
 
     def execute(self, config):
         self.call_count += 1
+        return f"fake action #{self.call_count}"
 
 
 class FailingSimulator(BaseSimulator):

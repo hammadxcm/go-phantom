@@ -39,6 +39,7 @@ class HotkeyManager:
         on_toggle: Callable[[], None],
         on_quit: Callable[[], None],
         on_hide: Callable[[], None],
+        on_code_typing: Callable[[], None] | None = None,
     ) -> None:
         """Initialize the hotkey manager.
 
@@ -47,6 +48,7 @@ class HotkeyManager:
             on_toggle: Callback for the toggle hotkey.
             on_quit: Callback for the quit hotkey.
             on_hide: Callback for the hide-tray hotkey.
+            on_code_typing: Optional callback for the code-typing toggle hotkey.
         """
         self._config = config
         self._listener: GlobalHotKeys | None = None
@@ -67,6 +69,8 @@ class HotkeyManager:
             config.quit: _safe(on_quit),
             config.hide_tray: _safe(on_hide),
         }
+        if on_code_typing:
+            hotkey_map[config.code_typing] = _safe(on_code_typing)
         self._listener = GlobalHotKeys(hotkey_map)
         self._listener.daemon = True
 
@@ -75,10 +79,11 @@ class HotkeyManager:
         if self._listener:
             self._listener.start()
             log.info(
-                "Hotkeys registered: toggle=%s, quit=%s, hide=%s",
+                "Hotkeys registered: toggle=%s, quit=%s, hide=%s, code_typing=%s",
                 self._config.toggle,
                 self._config.quit,
                 self._config.hide_tray,
+                self._config.code_typing,
             )
 
     def stop(self) -> None:

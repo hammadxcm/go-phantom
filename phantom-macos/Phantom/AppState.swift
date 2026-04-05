@@ -13,6 +13,9 @@ final class AppState: ObservableObject {
     @Published var isRunning = false
     @Published var selectedPreset: Preset?
     @Published var launchAtLogin = false
+    @Published var totalActions: Int = 0
+    @Published var uptime: TimeInterval = 0
+    @Published var actionsBySimulator: [String: Int] = [:]
 
     let configManager: ConfigManager
     let scheduler: Scheduler
@@ -20,6 +23,8 @@ final class AppState: ObservableObject {
     var statusBar: StatusBarController?
 
     private var configSaveTimer: Timer?
+    private var uptimeTimer: Timer?
+    private var startTime: Date?
 
     init() {
         configManager = ConfigManager()
@@ -34,6 +39,22 @@ final class AppState: ObservableObject {
         ]
 
         scheduler = Scheduler(configManager: configManager, simulators: simulators)
+
+        // Wire action count callback
+        scheduler.onAction = { [weak self] name in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.totalActions += 1
+                self.actionsBySimulator[name, default: 0] += 1
+            }
+        }
+
+        // Start uptime timer
+        startTime = Date()
+        uptimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self, let start = self.startTime else { return }
+            self.uptime = Date().timeIntervalSince(start)
+        }
 
         // Apply stealth settings
         if config.stealth.renameProcess {
@@ -74,6 +95,8 @@ final class AppState: ObservableObject {
     }
 
     func shutdown() {
+        uptimeTimer?.invalidate()
+        uptimeTimer = nil
         scheduler.shutdown()
         hotkeyManager.stop()
         configManager.updateAndSave { [config] cfg in

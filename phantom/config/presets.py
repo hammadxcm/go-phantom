@@ -18,13 +18,23 @@ PRESETS: dict[str, dict] = {
         "timing": {"interval_mean": 8.0, "interval_stddev": 4.0},
     },
     "aggressive": {
-        "_only": {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"},
+        "_only": {
+            "mouse",
+            "keyboard",
+            "scroll",
+            "app_switcher",
+            "browser_tabs",
+            "code_typing",
+        },
         "timing": {"interval_mean": 3.0, "interval_stddev": 1.5},
+        "app_switcher": {"max_tabs": 5},
+        "browser_tabs": {"max_tabs": 6},
     },
     "stealth": {
         "_only": {"mouse", "scroll"},
         "timing": {"interval_mean": 15.0, "interval_stddev": 5.0},
         "mouse": {"min_distance": 20, "max_distance": 150},
+        "scroll": {"horizontal_chance": 0.05},
     },
     "minimal": {
         "_only": {"mouse"},

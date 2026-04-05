@@ -156,10 +156,10 @@ class Scheduler:
 
             try:
                 sim_config = self._get_sim_config(chosen)
-                sim.execute(sim_config)
+                detail = sim.execute(sim_config) or ""
                 self._anti_detection.record(chosen)
                 if self._stats:
-                    self._stats.record_action(chosen)
+                    self._stats.record_action(chosen, detail)
             except Exception:
                 log.exception("Simulator %s failed", chosen)
 

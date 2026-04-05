@@ -22,15 +22,19 @@ class BrowserTabsSimulator(BaseSimulator):
         super().__init__()
         self._controller = Controller()
 
-    def execute(self, config: BrowserTabsConfig) -> None:
+    def execute(self, config: BrowserTabsConfig) -> str:
         """Simulate switching between browser tabs.
 
         Args:
             config: Browser-tabs simulation configuration.
+
+        Returns:
+            Detail string describing the tab switch action.
         """
-        tabs = random.randint(1, 4)
+        tabs = random.randint(config.min_tabs, config.max_tabs)
         shortcut: TabShortcut | None = None
         app_name = "unknown"
+        direction = "forward"
 
         if config.context_aware:
             window = get_active_window()
@@ -43,7 +47,7 @@ class BrowserTabsSimulator(BaseSimulator):
             keys = shortcut.backward if backward else shortcut.forward
             direction = "backward" if backward else "forward"
             self._press_shortcut(keys, tabs)
-            self.log.debug("Browser tab switch: %d tabs (%s, %s)", tabs, app_name, direction)
+            detail = f"Browser tabs {tabs} {direction} in {app_name}"
         else:
             # Fallback: blind Ctrl+Tab
             for _ in range(tabs):
@@ -58,7 +62,10 @@ class BrowserTabsSimulator(BaseSimulator):
                 finally:
                     self._controller.release(Key.ctrl)
                 time.sleep(random.uniform(0.20, 0.50))
-            self.log.debug("Browser tab switch: %d tabs", tabs)
+            detail = f"Browser tabs {tabs} via Ctrl+Tab"
+
+        self.log.info(detail)
+        return detail
 
     def _press_shortcut(self, keys: tuple, times: int) -> None:
         """Press a multi-key shortcut, releasing in reverse order.

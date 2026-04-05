@@ -1,7 +1,8 @@
 name: go-phantom
 base: core22
-version: '0.0.2'
+version: '0.0.3'
 title: Phantom
+icon: assets/icon-256.png
 summary: Cross-platform activity simulator
 description: |
   Phantom keeps your computer looking busy with realistic mouse movements,

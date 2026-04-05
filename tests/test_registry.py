@@ -19,12 +19,12 @@ class FakeSim(BaseSimulator):
 
 class TestSimulatorRegistry:
     def test_default_registry_has_all_sims(self):
-        expected = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
+        expected = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs", "code_typing"}
         assert expected <= set(SIMULATOR_REGISTRY.keys())
 
     def test_create_simulators_returns_instances(self):
         sims = create_simulators()
-        assert len(sims) >= 5
+        assert len(sims) >= 6
         for name, sim in sims.items():
             assert isinstance(sim, BaseSimulator), f"{name} is not a BaseSimulator"
 
