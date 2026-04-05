@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from unittest.mock import MagicMock
 
 import pytest
@@ -152,19 +151,19 @@ class TestArrowKeyNavigation:
         assert dashboard._selected_sim == 1
 
     def test_arrow_down_wraps(self, dashboard):
-        dashboard._selected_sim = 5
+        dashboard._selected_sim = 6
         dashboard.action_arrow_down()
         assert dashboard._selected_sim == 1
 
     def test_arrow_up_selects_last(self, dashboard):
         assert dashboard._selected_sim is None
         dashboard.action_arrow_up()
-        assert dashboard._selected_sim == 5
+        assert dashboard._selected_sim == 6
 
     def test_arrow_up_wraps(self, dashboard):
         dashboard._selected_sim = 1
         dashboard.action_arrow_up()
-        assert dashboard._selected_sim == 5
+        assert dashboard._selected_sim == 6
 
     def test_arrow_up_down_cycle(self, dashboard):
         dashboard.action_arrow_down()  # 1
@@ -212,17 +211,16 @@ class TestBuildMethods:
         assert isinstance(result, Table)
 
     def test_build_preview_text_empty(self, dashboard):
-        result = dashboard._build_preview_text()
+        snap = dashboard._stats.snapshot()
+        result = dashboard._build_preview_text(snap)
         assert isinstance(result, Text)
 
-    def test_build_preview_text_with_sim_logs(self, dashboard):
-        logger = logging.getLogger("phantom.simulators.mouse")
-        logger.addHandler(dashboard._log_handler)
-        logger.setLevel(logging.DEBUG)
-        logger.info("moved to (450, 320)")
-        result = dashboard._build_preview_text()
+    def test_build_preview_text_with_details(self, dashboard):
+        dashboard._stats.record_action("mouse", "Mouse (0,0)->(100,100) dist=141px correction=no")
+        snap = dashboard._stats.snapshot()
+        result = dashboard._build_preview_text(snap)
         assert isinstance(result, Text)
-        logger.removeHandler(dashboard._log_handler)
+        assert "Mouse" in result.plain
 
     def test_build_footer(self, dashboard):
         result = dashboard._build_footer()
@@ -247,7 +245,7 @@ class TestThemes:
             assert required <= set(theme.keys()), f"Theme {name!r} missing keys"
 
     def test_all_themes_have_sim_colors(self):
-        sims = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
+        sims = {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs", "code_typing"}
         for name, theme in THEMES.items():
             assert sims <= set(theme["sim_colors"].keys()), f"Theme {name!r} missing sim colors"
 

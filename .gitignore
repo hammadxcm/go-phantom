@@ -33,3 +33,11 @@ config.json
 # OS
 .DS_Store
 Thumbs.db
+
+# PyInstaller output
+dist/
+*.spec.bak
+
+# Logs
+*.log
+.phantom/

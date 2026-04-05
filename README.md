@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/phantom-v0.0.2-blueviolet?style=for-the-badge" alt="version" />
+  <img src="https://img.shields.io/badge/phantom-v0.0.3-blueviolet?style=for-the-badge" alt="version" />
   <img src="https://img.shields.io/badge/python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="python" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="license" />
   <img src="https://img.shields.io/badge/tests-298%20passing-brightgreen?style=for-the-badge" alt="tests" />
@@ -126,7 +126,7 @@ scoop install go-phantom
 
 # Download binary from GitHub Releases
 # macOS: phantom-macos-arm64
-# Linux: phantom-linux-x86_64 or phantom_0.0.2_amd64.deb
+# Linux: phantom-linux-x86_64 or phantom_0.0.3_amd64.deb
 # Windows: phantom-windows.exe
 ```
 

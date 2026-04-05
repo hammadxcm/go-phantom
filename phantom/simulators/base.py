@@ -27,11 +27,14 @@ class BaseSimulator(abc.ABC):
         )
 
     @abc.abstractmethod
-    def execute(self, config: Any) -> None:
+    def execute(self, config: Any) -> str:
         """Perform one round of simulated activity.
 
         Args:
             config: Typed configuration dataclass for this simulator.
+
+        Returns:
+            A human-readable detail string describing what happened.
         """
 
     @property

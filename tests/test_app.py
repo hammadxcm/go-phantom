@@ -32,10 +32,10 @@ class TestPhantomApp:
 
     @patch("phantom.app.mask_process_name")
     @patch("phantom.app.check_platform_requirements")
-    @patch("phantom.app.pyautogui")
+    @patch("pyautogui.FAILSAFE", False)
+    @patch("pyautogui.PAUSE", 0)
     def test_run(
         self,
-        mock_pyautogui,
         mock_check,
         mock_mask,
         MockCM,
@@ -58,10 +58,10 @@ class TestPhantomApp:
 
     @patch("phantom.app.mask_process_name")
     @patch("phantom.app.check_platform_requirements")
-    @patch("phantom.app.pyautogui")
+    @patch("pyautogui.FAILSAFE", False)
+    @patch("pyautogui.PAUSE", 0)
     def test_run_no_rename(
         self,
-        mock_pyautogui,
         mock_check,
         mock_mask,
         MockCM,
@@ -129,10 +129,10 @@ class TestPhantomApp:
     @patch("phantom.app._print_status")
     @patch("phantom.app.mask_process_name")
     @patch("phantom.app.check_platform_requirements")
-    @patch("phantom.app.pyautogui")
+    @patch("pyautogui.FAILSAFE", False)
+    @patch("pyautogui.PAUSE", 0)
     def test_run_tui_mode(
         self,
-        mock_pyautogui,
         mock_check,
         mock_mask,
         mock_status,
@@ -156,10 +156,10 @@ class TestPhantomApp:
     @patch("phantom.app._print_status")
     @patch("phantom.app.mask_process_name")
     @patch("phantom.app.check_platform_requirements")
-    @patch("phantom.app.pyautogui")
+    @patch("pyautogui.FAILSAFE", False)
+    @patch("pyautogui.PAUSE", 0)
     def test_run_tail_mode(
         self,
-        mock_pyautogui,
         mock_check,
         mock_mask,
         mock_status,
@@ -183,10 +183,10 @@ class TestPhantomApp:
     @patch("phantom.app._print_status")
     @patch("phantom.app.mask_process_name")
     @patch("phantom.app.check_platform_requirements")
-    @patch("phantom.app.pyautogui")
+    @patch("pyautogui.FAILSAFE", False)
+    @patch("pyautogui.PAUSE", 0)
     def test_run_ghost_mode(
         self,
-        mock_pyautogui,
         mock_check,
         mock_mask,
         mock_status,
@@ -262,10 +262,10 @@ class TestPhantomApp:
 
     @patch("phantom.app.mask_process_name")
     @patch("phantom.app.check_platform_requirements")
-    @patch("phantom.app.pyautogui")
+    @patch("pyautogui.FAILSAFE", False)
+    @patch("pyautogui.PAUSE", 0)
     def test_print_logo(
         self,
-        mock_pyautogui,
         mock_check,
         mock_mask,
         MockCM,
@@ -302,4 +302,12 @@ def test_create_simulators():
     from phantom.app import PhantomApp
 
     sims = PhantomApp._create_simulators()
-    assert set(sims.keys()) == {"mouse", "keyboard", "scroll", "app_switcher", "browser_tabs"}
+    expected = {
+        "mouse",
+        "keyboard",
+        "scroll",
+        "app_switcher",
+        "browser_tabs",
+        "code_typing",
+    }
+    assert set(sims.keys()) == expected

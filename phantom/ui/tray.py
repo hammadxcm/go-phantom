@@ -25,6 +25,7 @@ class TrayIcon:
         on_toggle: Callable[[], bool],
         on_quit: Callable[[], None],
         on_hide: Callable[[], None],
+        on_show_window: Callable[[], None] | None = None,
     ) -> None:
         """Initialize the tray icon.
 
@@ -32,10 +33,12 @@ class TrayIcon:
             on_toggle: Callback returning ``True`` if now active.
             on_quit: Callback invoked when the user selects Quit.
             on_hide: Callback invoked when the user hides the tray.
+            on_show_window: Optional callback to show the GUI window.
         """
         self._on_toggle = on_toggle
         self._on_quit = on_quit
         self._on_hide = on_hide
+        self._on_show_window = on_show_window
         self._active = False
         self._icon: pystray.Icon | None = None
 
@@ -80,19 +83,30 @@ class TrayIcon:
             log.info("Tray icon shown")
 
     def _build_menu(self) -> pystray.Menu:
-        return pystray.Menu(
+        items = [
             MenuItem(
                 lambda _: "Pause" if self._active else "Start",
                 self._handle_toggle,
             ),
             pystray.Menu.SEPARATOR,
-            MenuItem("Hide Tray", self._handle_hide),
-            MenuItem("Quit", self._handle_quit),
+        ]
+        if self._on_show_window is not None:
+            items.append(MenuItem("Show Window", self._handle_show_window))
+        items.extend(
+            [
+                MenuItem("Hide Tray", self._handle_hide),
+                MenuItem("Quit", self._handle_quit),
+            ]
         )
+        return pystray.Menu(*items)
 
     def _handle_toggle(self, icon: pystray.Icon, item: MenuItem) -> None:
         active = self._on_toggle()
         self.update_status(active)
+
+    def _handle_show_window(self, icon: pystray.Icon, item: MenuItem) -> None:
+        if self._on_show_window is not None:
+            self._on_show_window()
 
     def _handle_hide(self, icon: pystray.Icon, item: MenuItem) -> None:
         self._on_hide()

@@ -33,6 +33,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y python3-tk python3-dev
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -63,6 +67,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y python3-tk python3-dev
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -81,11 +88,25 @@ jobs:
       - name: Build .deb package
         run: |
           VERSION=${GITHUB_REF_NAME#v}
+
+          mkdir -p staging/usr/bin
+          mkdir -p staging/usr/share/applications
+          cp dist/phantom staging/usr/bin/phantom
+          cp packaging/linux/phantom.desktop staging/usr/share/applications/
+
+          for size in 16 32 48 64 128 256 512; do
+            mkdir -p staging/usr/share/icons/hicolor/${size}x${size}/apps
+            cp assets/icon-${size}.png staging/usr/share/icons/hicolor/${size}x${size}/apps/phantom.png
+          done
+
           fpm -s dir -t deb -n phantom -v "$VERSION" \
             --description "Cross-platform activity simulator" \
-            --license MIT \
-            --architecture amd64 \
-            dist/phantom=/usr/local/bin/phantom
+            --license MIT --architecture amd64 \
+            --maintainer "Phantom Contributors" \
+            --url "https://github.com/hammadxcm/go-phantom" \
+            --category utils \
+            --after-install packaging/linux/postinst.sh \
+            -C staging .
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v6

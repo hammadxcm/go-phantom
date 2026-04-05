@@ -18,6 +18,11 @@ struct SettingsView: View {
                     Label("Simulators", systemImage: "cpu")
                 }
 
+            StatusTab(appState: appState)
+                .tabItem {
+                    Label("Status", systemImage: "chart.bar")
+                }
+
             HotkeysTab()
                 .tabItem {
                     Label("Hotkeys", systemImage: "keyboard")
@@ -33,7 +38,7 @@ struct SettingsView: View {
                     Label("About", systemImage: "info.circle")
                 }
         }
-        .frame(width: 480, height: 400)
+        .frame(width: 480, height: 440)
     }
 }
 
@@ -152,6 +157,75 @@ struct SimulatorRow: View {
     }
 }
 
+// MARK: - Status Tab
+
+struct StatusTab: View {
+    @ObservedObject var appState: AppState
+
+    var body: some View {
+        Form {
+            Section("Current State") {
+                HStack {
+                    Circle()
+                        .fill(appState.isRunning ? Color.green : Color.orange)
+                        .frame(width: 10, height: 10)
+                    Text(appState.isRunning ? "Running" : "Paused")
+                        .fontWeight(.medium)
+                }
+
+                HStack {
+                    Text("Uptime")
+                    Spacer()
+                    Text(formatUptime(appState.uptime))
+                        .foregroundStyle(.secondary)
+                        .font(.system(.body, design: .monospaced))
+                }
+            }
+
+            Section("Actions") {
+                HStack {
+                    Text("Total Actions")
+                    Spacer()
+                    Text("\(appState.totalActions)")
+                        .foregroundStyle(.secondary)
+                        .font(.system(.body, design: .monospaced))
+                }
+
+                ForEach(appState.actionsBySimulator.sorted(by: { $0.key < $1.key }), id: \.key) { name, count in
+                    HStack {
+                        Text(displayName(for: name))
+                        Spacer()
+                        Text("\(count)")
+                            .foregroundStyle(.secondary)
+                            .font(.system(.body, design: .monospaced))
+                    }
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .padding()
+    }
+
+    private func formatUptime(_ interval: TimeInterval) -> String {
+        let total = Int(interval)
+        let hours = total / 3600
+        let minutes = (total % 3600) / 60
+        let seconds = total % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+
+    private func displayName(for key: String) -> String {
+        switch key {
+        case "mouse": return "Mouse"
+        case "keyboard": return "Keyboard"
+        case "scroll": return "Scroll"
+        case "app_switcher": return "App Switcher"
+        case "browser_tabs": return "Browser Tabs"
+        default: return key
+        }
+    }
+}
+
 // MARK: - Hotkeys Tab
 
 struct HotkeysTab: View {
@@ -214,9 +288,9 @@ struct StealthTab: View {
 struct AboutTab: View {
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "theatermasks.circle.fill")
-                .font(.system(size: 64))
-                .foregroundStyle(.cyan)
+            Image(nsImage: NSApp.applicationIconImage)
+                .resizable()
+                .frame(width: 64, height: 64)
 
             Text("Phantom")
                 .font(.title)

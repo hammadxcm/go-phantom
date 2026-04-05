@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
+import math
 import random
 import time
-
-import pyautogui
 
 from phantom.config.schema import MouseConfig
 from phantom.core.randomization import Randomizer
@@ -20,15 +19,21 @@ class MouseSimulator(BaseSimulator):
     jitter near the destination.
     """
 
-    def execute(self, config: MouseConfig) -> None:
+    def execute(self, config: MouseConfig) -> str:
         """Move the mouse cursor to a random nearby position.
 
         Args:
             config: Mouse simulator settings including distance bounds
                 and Bezier resolution.
+
+        Returns:
+            Detail string describing the movement.
         """
+        import pyautogui
+
         screen_w, screen_h = pyautogui.size()
         current_x, current_y = pyautogui.position()
+        start_x, start_y = current_x, current_y
 
         target_x = self._clamp(
             current_x + random.randint(-config.max_distance, config.max_distance),
@@ -58,7 +63,8 @@ class MouseSimulator(BaseSimulator):
             time.sleep(Randomizer.step_delay())
 
         # Micro-correction: subtle drift after arriving (like a human settling)
-        if random.random() < 0.3:
+        did_correct = random.random() < 0.3
+        if did_correct:
             jitter_x = target_x + random.randint(-2, 2)
             jitter_y = target_y + random.randint(-2, 2)
             jitter_x = self._clamp(jitter_x, 0, screen_w - 1)
@@ -75,7 +81,14 @@ class MouseSimulator(BaseSimulator):
                 pyautogui.moveTo(int(cx), int(cy), _pause=False)
                 time.sleep(random.uniform(0.010, 0.025))
 
-        self.log.debug("Mouse moved to (%d, %d)", target_x, target_y)
+        dist = math.hypot(target_x - start_x, target_y - start_y)
+        correction_str = "yes" if did_correct else "no"
+        detail = (
+            f"Mouse ({start_x},{start_y})->({target_x},{target_y})"
+            f" dist={dist:.0f}px correction={correction_str}"
+        )
+        self.log.info(detail)
+        return detail
 
     @staticmethod
     def _clamp(value: int, lo: int, hi: int) -> int:
