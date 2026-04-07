@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0e1117"/>
+      <stop offset="100%" stop-color="#1a1f2e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="20" flood-color="#06b6d4" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="1024" height="1024" rx="228" fill="url(#bg)"/>
+  <!-- Subtle border -->
+  <rect x="4" y="4" width="1016" height="1016" rx="224" fill="none" stroke="url(#glow)" stroke-width="3" opacity="0.3"/>
+  <!-- Ghost/Phantom shape -->
+  <g transform="translate(512, 480)" filter="url(#shadow)">
+    <!-- Main phantom body -->
+    <path d="M0-260 C-160-260 -260-160 -260,0 L-260,220 C-260,240 -240,240 -230,220 L-200,160 C-190,140 -170,140 -160,160 L-130,220 C-120,240 -100,240 -90,220 L-60,160 C-50,140 -30,140 -20,160 L10,220 C20,240 40,240 50,220 L80,160 C90,140 110,140 120,160 L150,220 C160,240 180,240 190,220 L220,160 C230,140 250,140 260,160 L260,0 C260-160 160-260 0-260Z"
+          fill="url(#glow)" opacity="0.9"/>
+    <!-- Left eye -->
+    <ellipse cx="-90" cy="-60" rx="45" ry="55" fill="#0e1117"/>
+    <ellipse cx="-80" cy="-70" rx="18" ry="22" fill="#ffffff" opacity="0.9"/>
+    <!-- Right eye -->
+    <ellipse cx="90" cy="-60" rx="45" ry="55" fill="#0e1117"/>
+    <ellipse cx="100" cy="-70" rx="18" ry="22" fill="#ffffff" opacity="0.9"/>
+  </g>
+</svg>
