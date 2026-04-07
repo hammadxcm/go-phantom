@@ -13,6 +13,7 @@
     "tailwindcss": "^4.1.3"
   },
   "overrides": {
-    "defu": ">=6.1.5"
+    "defu": ">=6.1.5",
+    "vite": ">=7.3.2"
   }
 }
