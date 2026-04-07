@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Phantom
+Exec=phantom --gui
+Icon=${SNAP}/meta/gui/icon.png
+Type=Application
+Terminal=false
+Categories=Utility;
+Comment=Cross-platform activity simulator

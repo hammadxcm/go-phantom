@@ -251,7 +251,11 @@ class PhantomApp:
         self._gui = gui
         # On Windows, run tray on a background thread (pystray supports this)
         if sys.platform == "win32":
-            self._tray._on_show_window = lambda: gui._root.after(0, gui._root.deiconify)
+
+            def _show_gui() -> None:
+                gui._root.after(0, gui._root.deiconify)
+
+            self._tray._on_show_window = _show_gui
             threading.Thread(target=self._tray.run, daemon=True).start()
         self._tray.update_status(True)
         log.info("Phantom started (GUI mode).")
