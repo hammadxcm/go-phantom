@@ -251,6 +251,7 @@ class PhantomApp:
         self._gui = gui
         # On Windows, run tray on a background thread (pystray supports this)
         if sys.platform == "win32":
+
             def _show_gui() -> None:
                 gui._root.after(0, gui._root.deiconify)
 
