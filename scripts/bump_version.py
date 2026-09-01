@@ -116,21 +116,6 @@ def main():
             ),
         ),
         (
-            "Formula/phantom.rb",
-            lambda: any([
-                replace_in_file(
-                    ROOT / "Formula" / "phantom.rb",
-                    rf"/v{re.escape(old)}\.tar\.gz",
-                    f"/v{new}.tar.gz",
-                ),
-                replace_in_file(
-                    ROOT / "Formula" / "phantom.rb",
-                    r'sha256 "[^"]+"',
-                    'sha256 "PLACEHOLDER_SHA256"',
-                ),
-            ]),
-        ),
-        (
             "snap/snapcraft.yaml",
             lambda: replace_in_file(
                 ROOT / "snap" / "snapcraft.yaml",
