@@ -9,7 +9,6 @@ Usage:
 """
 
 import argparse
-import json
 import re
 import sys
 from pathlib import Path
@@ -234,11 +233,11 @@ def main():
         print(f"  {'OK' if result else '--'}  {name} ... {status}")
 
     print(f"\nVersion bumped to {new}")
-    print(f"\nNext steps:")
+    print("\nNext steps:")
     print(f"  1. Update CHANGELOG.md with a new [{new}] section")
     print(f'  2. git add -A && git commit -m "Release v{new}"')
     print(f"  3. git tag v{new}")
-    print(f"  4. git push && git push --tags")
+    print("  4. git push && git push --tags")
 
 
 if __name__ == "__main__":
