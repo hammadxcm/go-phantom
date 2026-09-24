@@ -466,7 +466,16 @@ class TestCodeTypingSimulator:
         sim._controller = mock_ctrl
         config = CodeTypingConfig(min_chars=3, max_chars=5)
 
-        with patch("phantom.simulators.code_typing.random.randint", return_value=4):
+        # Pin the snippet too: the pool contains fragments shorter than
+        # max_len (e.g. "}"), and execute() truncates with snippet[:max_len],
+        # so leaving random.choice free makes this assertion flaky.
+        with (
+            patch("phantom.simulators.code_typing.random.randint", return_value=4),
+            patch(
+                "phantom.simulators.code_typing.random.choice",
+                return_value="let mut count = 0;",
+            ),
+        ):
             sim.execute(config)
 
         # Each character typed individually

@@ -293,6 +293,12 @@ jobs:
           SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
+          # Tag names reach Ruby/JSON source below, so reject anything that is
+          # not a plain semver before it is interpolated (CWE-94).
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "Refusing to publish from unexpected tag: $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
           HASH=$(sha256sum phantom-windows.exe | cut -d' ' -f1)
 
           # Clone the bucket repo
@@ -330,4 +336,77 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add bucket/go-phantom.json
           git commit -m "Update go-phantom to v${VERSION}" || echo "No changes"
+          git push
+
+  # ─── Homebrew Tap (macOS/Linux) ─────────────────────────────────────────────
+  publish-homebrew:
+    needs: [release]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download macOS binary
+        uses: actions/download-artifact@v7
+        with:
+          name: phantom-macos-arm64
+          path: .
+
+      - name: Download Linux binary
+        uses: actions/download-artifact@v7
+        with:
+          name: phantom-linux-x86_64
+          path: .
+
+      - name: Update formula and push to tap
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          # Tag names reach Ruby/JSON source below, so reject anything that is
+          # not a plain semver before it is interpolated (CWE-94).
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "Refusing to publish from unexpected tag: $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+          MAC_SHA=$(sha256sum phantom-macos-arm64 | cut -d' ' -f1)
+          LINUX_SHA=$(sha256sum phantom-linux-x86_64 | cut -d' ' -f1)
+
+          git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/hammadxcm/homebrew-tap.git" tap-repo
+          mkdir -p tap-repo/Formula
+
+          cat > tap-repo/Formula/phantom.rb << FORMULA
+          class Phantom < Formula
+            desc "Cross-platform activity simulator"
+            homepage "https://github.com/hammadxcm/go-phantom"
+            version "${VERSION}"
+            license "MIT"
+
+            on_macos do
+              on_arm do
+                url "https://github.com/hammadxcm/go-phantom/releases/download/v${VERSION}/phantom-macos-arm64"
+                sha256 "${MAC_SHA}"
+              end
+            end
+
+            on_linux do
+              on_intel do
+                url "https://github.com/hammadxcm/go-phantom/releases/download/v${VERSION}/phantom-linux-x86_64"
+                sha256 "${LINUX_SHA}"
+              end
+            end
+
+            def install
+              bin.install Dir["phantom-*"].first => "phantom"
+            end
+
+            test do
+              assert_match "phantom", shell_output("#{bin}/phantom --help")
+            end
+          end
+          FORMULA
+
+          cd tap-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/phantom.rb
+          git commit -m "Update phantom to v${VERSION}" || echo "No changes"
           git push
