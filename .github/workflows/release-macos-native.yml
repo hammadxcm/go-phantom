@@ -7,14 +7,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-macos-native:
     runs-on: macos-14
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Set version
         id: version
@@ -33,6 +35,8 @@ jobs:
         run: brew install create-dmg
 
       - name: Build universal binary
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           xcodebuild -project phantom-macos/Phantom.xcodeproj \
             -scheme Phantom \
@@ -41,7 +45,7 @@ jobs:
             CODE_SIGN_IDENTITY="-" \
             ARCHS="arm64 x86_64" \
             ONLY_ACTIVE_ARCH=NO \
-            MARKETING_VERSION="${{ steps.version.outputs.version }}" \
+            MARKETING_VERSION="$VERSION" \
             build
 
       - name: Locate .app
@@ -52,6 +56,9 @@ jobs:
           echo "Found app at: $APP_PATH"
 
       - name: Create DMG
+        env:
+          DMG_NAME: ${{ steps.version.outputs.dmg_name }}
+          APP_PATH: ${{ steps.locate.outputs.app_path }}
         run: |
           create-dmg \
             --volname "Phantom" \
@@ -61,13 +68,13 @@ jobs:
             --icon "Phantom.app" 150 190 \
             --app-drop-link 450 190 \
             --no-internet-enable \
-            "${{ steps.version.outputs.dmg_name }}" \
-            "${{ steps.locate.outputs.app_path }}" || true
+            "$DMG_NAME" \
+            "$APP_PATH" || true
           # create-dmg returns 2 on success when there's no background image
-          ls -la "${{ steps.version.outputs.dmg_name }}"
+          ls -la "$DMG_NAME"
 
       - name: Upload DMG artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: Phantom-macOS-native
           path: ${{ steps.version.outputs.dmg_name }}
@@ -112,10 +119,11 @@ jobs:
       #     APPLE_ID: ${{ secrets.APPLE_ID }}
       #     APPLE_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
       #     APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      #     DMG_NAME: ${{ steps.version.outputs.dmg_name }}
       #   run: |
-      #     xcrun notarytool submit "${{ steps.version.outputs.dmg_name }}" \
+      #     xcrun notarytool submit "$DMG_NAME" \
       #       --apple-id "$APPLE_ID" \
       #       --password "$APPLE_PASSWORD" \
       #       --team-id "$APPLE_TEAM_ID" \
       #       --wait
-      #     xcrun stapler staple "${{ steps.version.outputs.dmg_name }}"
+      #     xcrun stapler staple "$DMG_NAME"
