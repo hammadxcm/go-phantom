@@ -109,7 +109,7 @@ mindmap
 pipx install go-phantom
 
 # Homebrew (macOS)
-brew install hammadxcm/go-phantom/phantom
+brew install hammadxcm/tap/phantom
 
 # Snap (Linux)
 sudo snap install go-phantom
@@ -133,7 +133,7 @@ scoop install go-phantom
 | Platform | Method | Install | Run |
 |----------|--------|---------|-----|
 | All | PyPI | `pipx install go-phantom` | `phantom` |
-| macOS | Homebrew | `brew install hammadxcm/go-phantom/phantom` | `phantom` |
+| macOS | Homebrew | `brew install hammadxcm/tap/phantom` | `phantom` |
 | Linux | Snap | `sudo snap install go-phantom` | `phantom` |
 | Linux | .deb | `sudo dpkg -i phantom_*.deb` | `phantom` |
 | Windows | Chocolatey | `choco install go-phantom` | `phantom` |

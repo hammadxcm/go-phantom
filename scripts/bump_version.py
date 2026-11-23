@@ -9,7 +9,6 @@ Usage:
 """
 
 import argparse
-import json
 import re
 import sys
 from pathlib import Path
@@ -117,21 +116,6 @@ def main():
             ),
         ),
         (
-            "Formula/phantom.rb",
-            lambda: any([
-                replace_in_file(
-                    ROOT / "Formula" / "phantom.rb",
-                    rf"/v{re.escape(old)}\.tar\.gz",
-                    f"/v{new}.tar.gz",
-                ),
-                replace_in_file(
-                    ROOT / "Formula" / "phantom.rb",
-                    r'sha256 "[^"]+"',
-                    'sha256 "PLACEHOLDER_SHA256"',
-                ),
-            ]),
-        ),
-        (
             "snap/snapcraft.yaml",
             lambda: replace_in_file(
                 ROOT / "snap" / "snapcraft.yaml",
@@ -234,11 +218,11 @@ def main():
         print(f"  {'OK' if result else '--'}  {name} ... {status}")
 
     print(f"\nVersion bumped to {new}")
-    print(f"\nNext steps:")
+    print("\nNext steps:")
     print(f"  1. Update CHANGELOG.md with a new [{new}] section")
     print(f'  2. git add -A && git commit -m "Release v{new}"')
     print(f"  3. git tag v{new}")
-    print(f"  4. git push && git push --tags")
+    print("  4. git push && git push --tags")
 
 
 if __name__ == "__main__":
